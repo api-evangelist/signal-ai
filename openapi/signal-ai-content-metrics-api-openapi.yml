@@ -1,0 +1,742 @@
+openapi: 3.1.0
+info:
+  title: Signal AI Affinity Content Metrics API
+  description: "# Overview\n\nThe Signal AI API is an HTTP+JSON API offering programmatic access to Signal AI's decision augmentation platform.\nSignal AI has the world's largest dataset of real-time, global news and regulatory information. Our proprietary AIQ framework understands, enriches and surfaces relevant news and regulatory data in real-time, and at scale.\n\nOur API offers three powerful capabilities:\n\n1. **Content Search**: Create hyper-relevant content feeds using Signal's AI-powered search\n1. **Content Metrics**: Get coverage & sentiment metrics at a glance to power Business Intelligence & data visualisation solutions\n1. **Affinity**: Uncover unknowns through the Signal AI Knowledge Graph\n1. **Events**: Identify significant clusters of news coverage about entities and topics of interest\n\nTo be able to interact with the Signal AI API endpoints and get the most value out of them, it is useful to understand the metadata concepts that our AI enriches content with.\n\n# Concepts\n\n## Topics\n\nSignal AI experts have trained over 300 topics (or themes), from Health to Blockchain to provide clients an easy way to track emerging trends relevant to their businesses.\nClients can also train their own topics with help from our experts for use in our API.\nThe API provides the ability to query for documents pertaining to one or many topics. Examples of topics include: `Renewable Energy`, `Autonomous Vehicles`, `Corporate Responsibility`, `Artificial Intelligence`, etc.\n\n## Entities\n\nOur world-leading entity extraction ensures you never miss updates about the people, places or companies you or your clients care about most. Signal AI uses machine learning to identify and disambiguate these entities so it can discern between _‘Iceland’_ the supermarket and _‘Iceland’_ the country.\nThe API provides the ability to query for mentions of one or many entities. Examples of entities include: `Tim Cook`, `Apple Inc.`, `United States`, `Hong Kong`, etc.\n\n### Sentiment\n\nOur proprietary AIQ framework looks at the context within articles to identify the sentiment around every mention of an entity in the article's content.\nFor example, if an article mentions _“Volvo’s new electric vehicles provide better range than the Tesla Model 3”_, Signal AI will recognise Volvo as having a positive sentiment while Tesla as negative.\nEach mention is then given a `negative`, `neutral`, or `positive` label which is included in the metadata returned with each document. In addition, an aggregated document-level sentiment label is also computed for each entity, indicating the overall sentiment around this entity in the document.\nSentiment labels are only attached to entities and their mentions, and not to topics.\n\n### Salience\n\nA salience score is computed for every entity found in an article. It provides information about the importance or centrality of that entity to the entire article text. The higher the score, the more the article is ‘about’ the entity. We expose this as a `salient` boolean attribute if the score is above a threshold.\nThe `salience-rank` of the entity is the rank order of each entity's salience score. The entity of rank 1 is the most central to the article. It is possible that an article contains no salient entities.\n\nWhen querying by entity, it is also possible to increase the relevance of results by restricting the search to documents for which these entities are salient, using the `where.entities.salient-only` flag.\n\nNext, we describe the different API endpoints that enable these capabilities\n\n# Authorization\n\nAccess to the API is authorized using OAuth2 Bearer Tokens.\n\n<!-- ReDoc-Inject: <security-definitions> -->\n\n# Endpoints\n\n## Concept Discovery\n\nThe following endpoints allow the exploration of Signal AI's trained concepts (topics and entities), and publication sources, for the purpose of crafting content search and affinity-related queries.\n\n### `/topics`\n\n```bash\ncurl \\\n  -H \"Authorization: Bearer eyJhbGciOi…\" \\\n  -H \"Content-Type: application/json\" \\\n  https://api.signal-ai.com/topics?name=environment&size=10\n```\n\n### `/categories/iptc-media-topics`\n\n```bash\ncurl \\\n  -H \"Authorization: Bearer eyJhbGciOi…\" \\\n  -H \"Content-Type: application/json\" \\\n  https://api.signal-ai.com/categories/iptc-media-topics\n```\n\n### `/entities`\n\n```bash\ncurl \\\n  -H \"Authorization: Bearer eyJhbGciOi…\" \\\n  -H \"Content-Type: application/json\" \\\n  https://api.signal-ai.com/entities?type=person&name=cook&size=10\n```\n\n### `/sources`\n\n```bash\ncurl \\\n  -H \"Authorization: Bearer eyJhbGciOi…\" \\\n  -H \"Content-Type: application/json\" \\\n  https://api.signal-ai.com/sources?name=times&size=10\n```\n\n### `/source-locations`\n\n```bash\ncurl \\\n  -H \"Authorization: Bearer eyJhbGciOi…\" \\\n  -H \"Content-Type: application/json\" \\\n  https://api.signal-ai.com/source-locations\n```\n\n## Content Search\n\nThis endpoint allows searching through Signal AI's vast content datasets, using a sophisticated query language.\n\n### `/search`\n\n```bash\ncurl \\\n  -H \"Authorization: Bearer eyJhbGciOi…\" \\\n  -H \"Content-Type: application/json\" \\\n  -X POST \\\n  -d '{ \"where\": { \"entities\": { \"id\": { \"eq\": \"11cab8df-4be1-470f-8f49-8f7f0863ec95\" } } } }' \\\n  https://api.signal-ai.com/search\n```\n\n## Content Metrics\n\nThis endpoint provides aggregated metrics over all our news & regulatory content.\n\n### `/metrics`\n\n```bash\ncurl \\\n  -H \"Authorization: Bearer eyJhbGciOi…\" \\\n  -H \"Content-Type: application/json\" \\\n  -X POST \\\n  -d '{ \"where\": { \"entities\": { \"id\": { \"eq\": \"11cab8df-4be1-470f-8f49-8f7f0863ec95\" } } },\n        \"aggregations\": { \"group-by\": [\"published-at\", \"country\"], \"metrics\": [\"document-count\"] } }' \\\n  https://api.signal-ai.com/metrics\n```\n\n## Affinity\n\nThe Affinity API allows users to discover connections between entities (e.g.\ncompanies) and topics, understand their proximity, and how it develops over\ntime, providing them with actionable intelligence about reputational risks and\ncommunication opportunities. It is powered by the Signal AI Knowledge Graph,\nwhich is generated by analyzing millions of documents every day.\n\n```bash\ncurl \\\n  -H \"Authorization: Bearer eyJhbGciOi…\" \\\n  -H \"Content-Type: application/json\" \\\n  -X POST \\\n  -d '{ \"relationship\": { \"type\": \"proximity\", \"date\": { \"start\": \"2022-01\", \"end\": \"2022-01\" }, \"interval\": \"month\", \"limit-per-interval\": 10 },\n        \"source-concept\": {\"id\": \"11cab8df-4be1-470f-8f49-8f7f0863ec95\"},\n        \"target-concepts\": { \"types\": [\"topic\"] } }' \\\n  https://api.signal-ai.com/affinity\n```\n\n## Events\n\nThe Events API enables monitoring of major news events, allowing users to easily identify changes that could impact them or their business. By leveraging the 15-month archive, users can easily get up to speed on the recent developments involving specific companies, industries or topics.\n\n```bash\ncurl \\\n-H 'Authorization: Bearer eyJhbGc...' \\\n-H 'Content-Type: application/json' \\\n-X POST \\\n-d '{\n    \"where\": {\n        \"date\": {\n            \"gte\": \"2022-05-01\",\n            \"lte\": \"2022-05-30\"\n        },\n        \"entities\": {\n            \"id\": {\"any\": [\"aee5dfa5-cf7e-4bcd-80c3-79b0125effc8\"]}\n        }\n    },\n    \"size\": 50\n}' \\\nhttps://api.signal-ai.com/events\n```\n\n# Pagination\n\nSome of our endpoints such as `/search` and `/entities` limit the number of results returned in the response. Often there is a `size` parameter that controls how many results should be returned per page. To get additional results you will need to use pagination.\n\nEndpoints that have pagination will include a `next-cursor` field in the response. This can be used to fetch additional results by issuing further requests with the same query and specifying a `from-cursor` parameter. The value of `next-cursor` from the last response should be used to set the `from-cursor` parameter. For `GET` requests this will need to be specified in the query parameter. For `POST` requests this will need to be specified in the request body.\n\nThe absence of `next-cursor` in the response indicates that you have consumed all results matching the query.\n\n# Rate Limiting\n\nWe put limits on all API requests to protect our system from receiving more requests than it can handle, and to ensure an equitable distribution of the system resources across API clients.\nThe following API rate limits apply on a per-endpoint, per-Client ID basis:\n\n| Endpoint         | requests/second | requests/minute |\n| ---------------- | --------------- | --------------- |\n| Content search   | 2               | 30              |\n| Content metrics  | 2               | 15              |\n| Concept affinity | 2               | 30              |\n| All others       | 5               | 60              |\n\n# Error responses\n\n### 400 – Bad request\n\nThe request is invalid. This could be due to invalid parameters or invalid\nvalues. The error response will contain a top level field called `errors`\nlisting the errors. Each error is reported as a tuple:\n\n- the first element indicates which element is invalid, potentially providing a\n  path to the incorrect field in the form `#/{type}/path/to/error` with `{type}`\n  one of:\n  - `query-params` for errors in URL parameters (or query string parameters)\n  - `path-params` for errors in the URL (usually invalid resource ID)\n  - `body` for errors in the body (for `POST` requests)\n- the second element contains an indication about the error\n\nExample of an error message:\n\n```json\n{\n  \"errors\": [\n    [\"#/query-params/sizee\", \"Invalid parameter\"],\n    [\"#/path-params/id\", \"String does not match format \\\"uuid\\\"\"],\n    [\n      \"#/body/relationship/date/start\",\n      \"must not be older than 15 months ago (2000-01)\"\n    ]\n  ]\n}\n```\n\n### 401 – Unauthorized\n\nIncorrect credentials, refer to the [Authorization](#section/Authorization)\nsection for more information.\n\n### 404 – Not found\n\nInvalid endpoint or unknown resource. For \"GET\" requests in particular (e.g.\n`GET /entities/{id}`) the body of the response will hold the invalid field.\n\n### 429 – Too many requests\n\nThe server received too many requests in the last second or minute. The [rate\nlimiting](#section/Rate-Limiting) section lists the limits for each endpoints.\n\n### 500 – Internal server error\n\nThe server encountered a problem while processing the request and failed\nunexpectedly. These errors are actively monitored and are automatically reported\nto our team so they can be investigated and fixed.\n\n### 502/503/504 – Gateway error / service unavailable\n\nThese error responses mean that the server either returned an invalid response\nor could not respond in time. For example, this could be due to unexpected high\nload on the server. It is usually safe to retry the request after some time.\n\n# Dates & Time Zones\n\nThe time zone that dictates the publication date is UTC. To be more precise, dates should respect the ISO 8601 format, where “Z” indicates UTC+0.\n\n# Changelog\n\n## v1.4 - 04/04/2023\n\n- Events GA\n  - Added support for pagination\n  - Added `/events/{hash}` endpoint\n\n## v1.3 - 28/07/2022\n\n- New Events capability\n  - Added the new `events` endpoint for monitoring major news events\n  - Enabled story-level metrics in the `metrics` endpoint to support volume and sentiment analysis of events\n\n## v1.2 - 08/06/2022\n\n- Improved Search capability\n  - Added support for `story-id` as a search query criterion\n  - Added support for `source.region` and `source.subregion` as search query criteria\n\n## v1.1 - 17/02/2022\n\n- Improved Affinity capability\n\n  - Added the new `affinity` endpoint for querying relationships between concepts\n  - Deprecated the existing `affinity/entities` and `affinity/topics` endpoints\n  - Improved the `proximity-score` and `sentiment-score` models for better explainability and precision\n\n  New endpoint:\n\n  - `POST /affinity`\n\n  Deprecated endpoints:\n\n  - `GET /affinity/entities`\n  - `GET /affinity/topics`\n"
+  version: v1.3
+servers:
+- url: https://api.signal-ai.com
+security:
+- OAuth2:
+  - default
+tags:
+- name: Content Metrics
+paths:
+  /metrics:
+    post:
+      operationId: get-metrics
+      security:
+      - OAuth2:
+        - metrics
+      tags:
+      - Content Metrics
+      summary: Metrics API for aggregated analytics
+      description: "## Metrics\n\nThe Metrics API provides at-a-glance analytics over all our news & regulatory content. It allows users to monitor, visualise and understand news coverage over time, and enables direct integration with Business Intelligence & data visualisation tools\n\nThe `/metrics` endpoint supports the same expressive query language as our `/search` endpoint, but rather than returning metadata for each individual piece of content, provides aggregated metrics over the results which can be sliced and diced along multiple dimensions: date, publication source, publication country, topics, entities, sentiment, etc.. The limits for these parameters are the same as on the `/search` endpoint (i.e. at most 200 entities, 100 topics...). The exact numbers for each field are detailed in the schema below.\n\nExample questions the Metrics API can answer in 1 API request / response:\n\n- How is the coverage (number of articles) and sentiment (negative, neutral and positive coverage) towards my suppliers changing…\n  - …over time?\n  - …and / or in relation to a set of key ESG topics?\n  - …and / or by country of publication?\n- How does overall sentiment towards companies in my portfolio vary by country?\n- What are the top publications (by volume) covering the topics of Cleantech and Sustainable Investments?\n\n> ⚠️&nbsp;&nbsp;**Metrics requests are limited to a maximum number of 10,000 aggregation groups**\n>\n> If the number of groups resulting from a query exceeds that limit, the API will return an HTTP 400 response (Bad Request).\n> We would recommend in such instance to break down the metrics query into multiple queries and combine the results. For instance, in order to get daily coverage metrics for 100 entities over 12 months (100 entities X 365 days = 36,500 aggregation groups), you could achieve this with either:\n>\n> - 4 requests for groups of 25 entities (25 entities X 365 days = 9,125 groups per request)\n> - 12 monthly requests for 100 entities (100 entities X 31 days = 3,100 groups per request)\n\n> ℹ️&nbsp;&nbsp;**For better performance, use the `where` field to select only relevant documents**\n>\n> Before computing the aggregated metrics, the `where` field is used to reduce the number of\n> documents the system has to process. The more precise the subset of documents is, the faster the\n> results will be computed.\n\n> ℹ️&nbsp;&nbsp;**Weekly Aggregation**\n>\n> The date associated with each aggregation bucket in the results will be the date of the first day of that week, so if you query from 2021-01-01 (which was a Friday), the date associated with the first bucket would be 2020-12-28 which was the Monday of the same week.\n"
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MetricsQuery'
+            examples:
+              entity-sentiment-metrics-request:
+                $ref: '#/components/examples/entity-sentiment-metrics-request'
+              entities-key-topics-metrics-request:
+                $ref: '#/components/examples/entities-key-topics-metrics-request'
+      responses:
+        '200':
+          description: Returns aggregate metrics for documents matching the search query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetricsResponse'
+              examples:
+                metrics-response:
+                  $ref: '#/components/examples/metrics-response'
+components:
+  schemas:
+    Aggregation:
+      type: object
+      propertyNames:
+        oneOf:
+        - $ref: '#/components/schemas/AggregationDimensionKey'
+        - $ref: '#/components/schemas/AggregationMetricKey'
+    SourceExclusion:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      properties:
+        id:
+          allOf:
+          - $ref: '#/components/schemas/AnyResourceIds'
+          - properties:
+              any:
+                maxItems: 500
+    AggregationMetricKey:
+      type: string
+      enum:
+      - document-count
+      - story-count
+    AggregationDimensionKey:
+      type: string
+      enum:
+      - published-at
+      - source
+      - source.country
+      - language
+      - topic
+      - iptc-media-topic
+      - entity
+      - entity.sentiment
+    AggregationQueryTermsIncludeOptions:
+      type: object
+      additionalProperties: false
+      properties:
+        include:
+          type: array
+          minItems: 1
+          maxItems: 100
+          items:
+            type: string
+        size:
+          type: integer
+          minimum: 1
+          maximum: 100
+      default:
+        size: 10
+    AnyTerms:
+      type: object
+      additionalProperties: false
+      required:
+      - any
+      properties:
+        any:
+          type: array
+          items:
+            type: string
+    EqualsResourceId:
+      type: object
+      additionalProperties: false
+      required:
+      - eq
+      properties:
+        eq:
+          $ref: '#/components/schemas/ResourceId'
+    MediaType:
+      type: string
+      enum:
+      - online
+      - print
+    EqualsOrAnyResourceIdsMatch:
+      oneOf:
+      - $ref: '#/components/schemas/EqualsResourceId'
+      - $ref: '#/components/schemas/AnyResourceIds'
+    EqualsTerm:
+      type: object
+      additionalProperties: false
+      required:
+      - eq
+      properties:
+        eq:
+          type: string
+    DateTime:
+      type: string
+      format: date-time
+      description: "A date and time based on the IETF RFC 3339 format (e.g.\n     `2023-01-01T13:37:00` or `2023-01-01T13:37:00Z` for UTC,\n     `2023-01-01T09:37:00-05:00` for EST). Note that UTC is used by default."
+      example: '2023-01-01T13:37:00'
+    ResourceIds:
+      type: array
+      items:
+        $ref: '#/components/schemas/ResourceId'
+    MediaTypeMatch:
+      oneOf:
+      - $ref: '#/components/schemas/EqualsMediaType'
+      - $ref: '#/components/schemas/AnyMediaType'
+    EqualsMediaType:
+      type: object
+      additionalProperties: false
+      required:
+      - eq
+      properties:
+        eq:
+          $ref: '#/components/schemas/MediaType'
+    EntitiesExclusion:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      properties:
+        id:
+          allOf:
+          - $ref: '#/components/schemas/AnyResourceIds'
+          - properties:
+              any:
+                maxItems: 100
+    SourceMatch:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          allOf:
+          - $ref: '#/components/schemas/EqualsOrAnyResourceIdsMatch'
+          - properties:
+              any:
+                maxItems: 500
+        country:
+          $ref: '#/components/schemas/EqualsOrAnyTermsMatch'
+        region:
+          $ref: '#/components/schemas/EqualsOrAnyTermsMatch'
+        subregion:
+          $ref: '#/components/schemas/EqualsOrAnyTermsMatch'
+    AggregationQueryOptions:
+      type: object
+      additionalProperties: false
+      properties:
+        published-at:
+          $ref: '#/components/schemas/AggregationQueryDateIntervalOptions'
+          description: The date interval to aggregate on.
+        topic:
+          $ref: '#/components/schemas/AggregationQueryResourcesIncludeOption'
+          description: The topics to aggregate on.
+        iptc-media-topic:
+          deprecated: true
+          $ref: '#/components/schemas/AggregationQueryResourcesIncludeOption'
+        entity:
+          $ref: '#/components/schemas/AggregationQueryResourcesIncludeOption'
+          description: The entities to aggregate on.
+        source.country:
+          $ref: '#/components/schemas/AggregationQueryTermsIncludeOptions'
+          description: The countries to aggregate on.
+        language:
+          $ref: '#/components/schemas/AggregationQueryTermsIncludeOptions'
+          description: The languages to aggregate on.
+        source:
+          $ref: '#/components/schemas/AggregationQuerySourceOptions'
+          description: The sources to aggregate on.
+      default:
+        published-at:
+          interval: month
+        source.country:
+          size: 10
+        language:
+          size: 10
+        source:
+          size: 10
+    ResourceIdsMatch:
+      oneOf:
+      - $ref: '#/components/schemas/EqualsResourceId'
+      - $ref: '#/components/schemas/AnyResourceIds'
+      - $ref: '#/components/schemas/AllResourceIds'
+    DateTimeRangeMatch:
+      type: object
+      properties:
+        gt:
+          $ref: '#/components/schemas/DateOrDateTime'
+        gte:
+          $ref: '#/components/schemas/DateOrDateTime'
+        lt:
+          $ref: '#/components/schemas/DateOrDateTime'
+        lte:
+          $ref: '#/components/schemas/DateOrDateTime'
+      additionalProperties: false
+      minProperties: 1
+      dependentSchemas:
+        gt:
+          not:
+            required:
+            - gte
+        gte:
+          not:
+            required:
+            - gt
+        lt:
+          not:
+            required:
+            - lte
+        lte:
+          not:
+            required:
+            - lt
+    MetricsQuery:
+      type: object
+      required:
+      - where
+      - aggregations
+      additionalProperties: false
+      properties:
+        where:
+          $ref: '#/components/schemas/DocumentMatch'
+        exclude:
+          $ref: '#/components/schemas/ExcludeClause'
+        aggregations:
+          $ref: '#/components/schemas/AggregationsQuery'
+    DocumentPosition:
+      type: string
+      enum:
+      - title
+      - title or summary
+      - full content
+      - quotes only
+    AggregationQueryResourcesIncludeOption:
+      type: object
+      required:
+      - include
+      additionalProperties: false
+      properties:
+        include:
+          type: array
+          minItems: 1
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/ResourceId'
+    LanguageMatch:
+      oneOf:
+      - type: object
+        additionalProperties: false
+        required:
+        - eq
+        properties:
+          eq:
+            type: string
+            description: Language (e.g. `English`, `Chinese`, `Spanish`, `German`, `Japanese`...)
+      - type: object
+        name: AnyLanguage
+        additionalProperties: false
+        required:
+        - any
+        properties:
+          any:
+            type: array
+            items:
+              type: string
+            description: A list of languages (e.g. `English`, `Chinese`, `Spanish`, `German`, `Japanese`...)
+    ResourceId:
+      type: string
+      format: uuid
+      pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+      example: bcd2d868-ed38-4382-b94a-622a30fc3215
+    AnyResourceIds:
+      type: object
+      additionalProperties: false
+      required:
+      - any
+      properties:
+        any:
+          $ref: '#/components/schemas/ResourceIds'
+    MetricsResponse:
+      type: object
+      required:
+      - aggregations
+      additionalProperties: false
+      properties:
+        aggregations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Aggregation'
+    AnyMediaType:
+      type: object
+      additionalProperties: false
+      required:
+      - any
+      properties:
+        any:
+          type: array
+          items:
+            $ref: '#/components/schemas/MediaType'
+    DocumentTopicsMatch:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      properties:
+        id:
+          allOf:
+          - $ref: '#/components/schemas/ResourceIdsMatch'
+          - properties:
+              any:
+                maxItems: 100
+              all:
+                maxItems: 100
+    Date:
+      type: string
+      format: date
+      description: "A date based on the IETF RFC 3339 format (e.g. `2023-01-01`).\n    Note that a day is the span of time between 00:00:00 and 23:59:59 based on\n    the UTC timezone. You may prefer using the `date-time` option to match days\n    in a different timezone."
+      example: '2023-01-01'
+    EqualsOrAnyTermsMatch:
+      oneOf:
+      - $ref: '#/components/schemas/EqualsTerm'
+      - $ref: '#/components/schemas/AnyTerms'
+    AggregationsQuery:
+      type: object
+      required:
+      - group-by
+      - metrics
+      additionalProperties: false
+      properties:
+        group-by:
+          type: array
+          uniqueItems: true
+          minItems: 1
+          maxItems: 6
+          items:
+            $ref: '#/components/schemas/AggregationDimensionKey'
+        options:
+          $ref: '#/components/schemas/AggregationQueryOptions'
+          description: Options for each group-by dimension
+        metrics:
+          type: array
+          items:
+            $ref: '#/components/schemas/AggregationMetricKey'
+          default:
+          - document-count
+          description: Metrics to compute for each group-by dimension
+      allOf:
+      - if:
+          properties:
+            group-by:
+              contains:
+                const: entity
+        then:
+          required:
+          - options
+          properties:
+            options:
+              required:
+              - entity
+      - if:
+          properties:
+            group-by:
+              contains:
+                const: topic
+        then:
+          required:
+          - options
+          properties:
+            options:
+              required:
+              - topic
+      - if:
+          properties:
+            group-by:
+              contains:
+                const: iptc-media-topic
+        then:
+          required:
+          - options
+          properties:
+            options:
+              required:
+              - iptc-media-topic
+    AllTerms:
+      type: object
+      additionalProperties: false
+      required:
+      - all
+      properties:
+        all:
+          type: array
+          items:
+            type: string
+    DocumentKeywordsMatch:
+      type: object
+      required:
+      - value
+      properties:
+        value:
+          allOf:
+          - $ref: '#/components/schemas/EqualsOrAnyOrAllTermsMatch'
+          - description: There is a 50 word limit for keywords across inclusion and exclusion. See the section **Keyword limitations** above for more details.
+        mentions:
+          $ref: '#/components/schemas/MentionPositionMatch'
+      description: Note that to use inclusion keywords, you will also need to include one of `entities`, `sources` or `topics` in your `where` clause.
+    ExcludeClause:
+      type: object
+      additionalProperties: false
+      properties:
+        entities:
+          $ref: '#/components/schemas/EntitiesExclusion'
+        topics:
+          $ref: '#/components/schemas/TopicsExclusion'
+        source:
+          oneOf:
+          - $ref: '#/components/schemas/SourceExclusion'
+          - $ref: '#/components/schemas/CountryExclusion'
+        keywords:
+          $ref: '#/components/schemas/KeywordsExclusion'
+    AllResourceIds:
+      type: object
+      additionalProperties: false
+      required:
+      - all
+      properties:
+        all:
+          $ref: '#/components/schemas/ResourceIds'
+    DateOrDateTime:
+      oneOf:
+      - $ref: '#/components/schemas/Date'
+      - $ref: '#/components/schemas/DateTime'
+    DocumentMatch:
+      type: object
+      additionalProperties: false
+      properties:
+        story-id:
+          allOf:
+          - $ref: '#/components/schemas/EqualsOrAnyResourceIdsMatch'
+          - properties:
+              any:
+                maxItems: 200
+        entities:
+          $ref: '#/components/schemas/DocumentEntitiesMatch'
+        published-at:
+          $ref: '#/components/schemas/DateTimeRangeMatch'
+        source:
+          $ref: '#/components/schemas/SourceMatch'
+        keywords:
+          $ref: '#/components/schemas/DocumentKeywordsMatch'
+        topics:
+          $ref: '#/components/schemas/DocumentTopicsMatch'
+        categories:
+          $ref: '#/components/schemas/CategoriesMatch'
+        language:
+          $ref: '#/components/schemas/LanguageMatch'
+        media-type:
+          $ref: '#/components/schemas/MediaTypeMatch'
+    CountryExclusion:
+      type: object
+      additionalProperties: false
+      required:
+      - country
+      properties:
+        country:
+          $ref: '#/components/schemas/AnyTerms'
+    AggregationQueryDateIntervalOptions:
+      type: object
+      required:
+      - interval
+      additionalProperties: false
+      properties:
+        interval:
+          type: string
+          enum:
+          - month
+          - week
+          - day
+      default:
+        interval: month
+    AggregationQuerySourceOptions:
+      type: object
+      additionalProperties: false
+      properties:
+        size:
+          type: integer
+          minimum: 1
+          maximum: 100
+        include:
+          type: array
+          minItems: 1
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/ResourceId'
+      default:
+        size: 10
+    CategoriesMatch:
+      type: object
+      deprecated: true
+      additionalProperties: false
+      required:
+      - id
+      properties:
+        id:
+          allOf:
+          - $ref: '#/components/schemas/ResourceIdsMatch'
+          - properties:
+              any:
+                maxItems: 100
+              all:
+                maxItems: 100
+    MentionPositionMatch:
+      type: object
+      additionalProperties: false
+      required:
+      - position
+      properties:
+        position:
+          $ref: '#/components/schemas/DocumentPosition'
+      description: Note that mentions found in `summary` or `quotation` are a subset of the mentions found in the `full content`.
+    TopicsExclusion:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      properties:
+        id:
+          allOf:
+          - $ref: '#/components/schemas/AnyResourceIds'
+          - properties:
+              any:
+                maxItems: 50
+    DocumentEntitiesMatch:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      properties:
+        id:
+          allOf:
+          - $ref: '#/components/schemas/ResourceIdsMatch'
+          - properties:
+              any:
+                type: array
+                maxItems: 200
+              all:
+                type: array
+                maxItems: 200
+        salient-only:
+          type: boolean
+          description: Only return documents for which these entities are salient
+        mentions:
+          $ref: '#/components/schemas/MentionPositionMatch'
+    KeywordsExclusion:
+      type: object
+      additionalProperties: false
+      required:
+      - value
+      properties:
+        value:
+          $ref: '#/components/schemas/AnyTerms'
+    EqualsOrAnyOrAllTermsMatch:
+      oneOf:
+      - $ref: '#/components/schemas/EqualsTerm'
+      - $ref: '#/components/schemas/AnyTerms'
+      - $ref: '#/components/schemas/AllTerms'
+  examples:
+    entities-key-topics-metrics-request:
+      summary: Competitor sentiment benchmark by key topic
+      value:
+        where:
+          published-at:
+            gte: '2020-12-01'
+            lt: '2021-02-01'
+          topics:
+            id:
+              any:
+              - fc31abf2-7b11-4ed5-a7d2-35266057c0dd
+              - c3e9ec2f-e225-4955-9dbf-5480ce3d30fe
+              - 4249987d-5b02-4e51-9c44-019dd8e39742
+              - a301b00d-f4ef-49fb-9224-f52386d4955e
+              - fdcb69a5-8aa6-4067-a29b-f064321e1d7d
+          entities:
+            id:
+              any:
+              - a9cf01c5-751f-4fe5-a529-12e0d297cb63
+              - c4ad0758-f3ee-4002-84aa-10849a153d75
+              - 06608104-0136-4371-ad04-be40fcc306a4
+              - d6341968-83df-441c-a869-fa7ae9c22c73
+              - d7f0268d-1322-32b2-83d9-bb6fa9922506
+        aggregations:
+          group-by:
+          - published-at
+          - topic
+          - entity
+          - entity.sentiment
+          options:
+            published-at:
+              interval: month
+            topic:
+              include:
+              - fc31abf2-7b11-4ed5-a7d2-35266057c0dd
+              - c3e9ec2f-e225-4955-9dbf-5480ce3d30fe
+              - 4249987d-5b02-4e51-9c44-019dd8e39742
+              - a301b00d-f4ef-49fb-9224-f52386d4955e
+              - fdcb69a5-8aa6-4067-a29b-f064321e1d7d
+            entity:
+              include:
+              - a9cf01c5-751f-4fe5-a529-12e0d297cb63
+              - c4ad0758-f3ee-4002-84aa-10849a153d75
+              - 06608104-0136-4371-ad04-be40fcc306a4
+              - d6341968-83df-441c-a869-fa7ae9c22c73
+              - d7f0268d-1322-32b2-83d9-bb6fa9922506
+          metrics:
+          - document-count
+    entity-sentiment-metrics-request:
+      summary: Week-on-week sentiment trend by country
+      value:
+        where:
+          published-at:
+            gte: '2021-01-01'
+            lt: '2021-04-01'
+          entities:
+            id:
+              eq: c7f15cae-ab0c-4bf5-b345-cea4d3e3ec9b
+        aggregations:
+          group-by:
+          - published-at
+          - source.country
+          - entity
+          - entity.sentiment
+          options:
+            published-at:
+              interval: week
+            source.country:
+              size: 10
+            entity:
+              include:
+              - c7f15cae-ab0c-4bf5-b345-cea4d3e3ec9b
+          metrics:
+          - document-count
+    metrics-response:
+      value:
+        aggregations:
+        - published-at: '2020-12-28'
+          source.country: United States
+          entity:
+            id: c7f15cae-ab0c-4bf5-b345-cea4d3e3ec9b
+            type: organisation
+            name: AstraZeneca
+          entity.sentiment: negative
+          document-count: 126
+        - published-at: '2020-12-28'
+          source.country: United States
+          entity:
+            id: c7f15cae-ab0c-4bf5-b345-cea4d3e3ec9b
+            type: organisation
+            name: AstraZeneca
+          entity.sentiment: neutral
+          document-count: 5536
+        - published-at: '2020-12-28'
+          source.country: United States
+          entity:
+            id: c7f15cae-ab0c-4bf5-b345-cea4d3e3ec9b
+            type: organisation
+            name: AstraZeneca
+          entity.sentiment: positive
+          document-count: 6831
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: "To obtain the Bearer Token using the Client ID / Secret pair provided to you:\n\n```bash\ncurl -X POST \\\n  -d 'grant_type=client_credentials' \\\n  -d 'client_id=YOUR_CLIENT_ID' \\\n  -d 'client_secret=YOUR_CLIENT_SECRET' \\\n  https://api.signal-ai.com/auth/token\n```\n\nThis will return the following JSON response:\n\n```json\n{\n    \"access_token\": \"eyJhbGciOi…\",\n    \"expires_in\": 86400,\n    …\n}\n```\n\nYou must send the `access_token` from this response in the Authorization header when making requests to other API endpoints:\n\n```bash\ncurl -H \"Authorization: Bearer eyJhbGciOi…\" \\\n  https://api.signal-ai.com/…\n```\n\nAccess tokens will expire 24 hours from the time they were issued.\n"
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.signal-ai.com/auth/token
+          scopes:
+            default: Access to discovery endpoints
+            search: Access to content search endpoint
+            metrics: Access to content metrics endpoint
+            affinity: Access to concept affinity endpoints
+            events: Access to events endpoint
+            risk-events: Access to risk events
+x-tagGroups:
+- name: Concept Discovery
+  tags:
+  - Publication sources
+  - Topics
+  - Entities
+  - Categories
+- name: Search
+  tags:
+  - Content Search
+- name: Metrics
+  tags:
+  - Content Metrics
+- name: Affinity
+  x-displayName: Affinity
+  tags:
+  - Affinity
+- name: Events
+  x-displayName: Events
+  tags:
+  - Events
+- name: Risk (Alpha)
+  tags:
+  - Risk Events
