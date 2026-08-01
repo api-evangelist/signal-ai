@@ -1,0 +1,68 @@
+generated: '2026-07-21'
+method: searched
+status: published
+source: https://mcp.signal-ai.com
+notes: >-
+  A hosted MCP server is live at https://mcp.signal-ai.com. An unauthenticated
+  probe returns HTTP 401 (auth required), and the Signal AI Keycloak realm
+  advertises an `mcp:tools` OAuth scope, confirming an official, OAuth-gated MCP
+  surface. The concrete tool list is not publicly enumerable without credentials,
+  so the tools[] below are DERIVED candidates mapped from the public OpenAPI
+  operations and may not match the server's exact tool names.
+server:
+  name: signal-ai
+  transport: http
+  url: https://mcp.signal-ai.com
+  auth: oauth2
+  auth_evidence:
+  - unauthenticated GET https://mcp.signal-ai.com -> 401
+  - Keycloak realm scope `mcp:tools` in well-known/signal-ai-openid-configuration.json
+tools:
+- name: search_documents
+  description: AI-powered content search over Signal AI's billion+ document corpus
+  source_operation: openapi/signal-ai-openapi-original.json#search-documents
+- name: get_document
+  description: Retrieve a single document by id
+  source_operation: openapi/signal-ai-openapi-original.json#get-document
+- name: get_metrics
+  description: Coverage and sentiment metrics aggregations for a query
+  source_operation: openapi/signal-ai-openapi-original.json#get-metrics
+- name: post_affinity
+  description: Query the Signal AI Knowledge Graph for concept affinity
+  source_operation: openapi/signal-ai-openapi-original.json#post-affinity
+- name: search_events
+  description: Find significant clusters of news coverage (events)
+  source_operation: openapi/signal-ai-openapi-original.json#search-events
+- name: get_event_by_hash
+  description: Retrieve a single event by hash
+  source_operation: openapi/signal-ai-openapi-original.json#get-event-by-hash
+- name: risk_events_search
+  description: Search risk events
+  source_operation: openapi/signal-ai-openapi-original.json#risk-events-search
+- name: risk_events_scores
+  description: Retrieve risk event scores
+  source_operation: openapi/signal-ai-openapi-original.json#risk-events-scores
+- name: risk_events_definitions
+  description: List risk event definitions
+  source_operation: openapi/signal-ai-openapi-original.json#risk-events-definitions
+- name: find_entities
+  description: Look up entities in the knowledge graph
+  source_operation: openapi/signal-ai-openapi-original.json#find-entities
+- name: get_entity
+  description: Retrieve a single entity by id
+  source_operation: openapi/signal-ai-openapi-original.json#get-entity
+- name: find_topics
+  description: Look up topics
+  source_operation: openapi/signal-ai-openapi-original.json#find-topics
+- name: get_topic
+  description: Retrieve a single topic by id
+  source_operation: openapi/signal-ai-openapi-original.json#get-topic
+- name: find_sources
+  description: Look up publication sources
+  source_operation: openapi/signal-ai-openapi-original.json#find-sources
+- name: get_source
+  description: Retrieve a single publication source by id
+  source_operation: openapi/signal-ai-openapi-original.json#get-source
+- name: get_source_locations
+  description: List available publication source locations
+  source_operation: openapi/signal-ai-openapi-original.json#get-source-locations

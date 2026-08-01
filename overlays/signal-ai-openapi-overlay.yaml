@@ -1,0 +1,30 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for Signal AI API
+  version: 1.0.0
+extends: openapi/signal-ai-openapi-original.json
+actions:
+- target: $.info
+  update:
+    x-apievangelist-provider: signal-ai
+    x-apievangelist-category:
+    - Media Intelligence
+    - Reputation Management
+    - Risk Intelligence
+    - Knowledge Graph
+    x-apievangelist-auth: oauth2-client-credentials
+    x-apievangelist-pagination: cursor
+    x-apievangelist-mcp-server: https://mcp.signal-ai.com
+- target: $.servers
+  update:
+    - url: https://api.signal-ai.com
+      description: Signal AI production API
+- target: $.info
+  update:
+    x-apievangelist-artifacts:
+      authentication: authentication/signal-ai-authentication.yml
+      scopes: scopes/signal-ai-scopes.yml
+      conventions: conventions/signal-ai-conventions.yml
+      data_model: data-model/signal-ai-data-model.yml
+      lifecycle: lifecycle/signal-ai-lifecycle.yml
+      conformance: conformance/signal-ai-conformance.yml

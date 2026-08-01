@@ -1,0 +1,28 @@
+generated: '2026-07-21'
+method: derived
+source: openapi/signal-ai-openapi-original.json
+standards:
+- id: oauth2
+  conforms: true
+  evidence: securitySchemes declares oauth2 with clientCredentials flow (tokenUrl https://api.signal-ai.com/auth/token)
+- id: oauth2-client-credentials
+  conforms: true
+  evidence: machine-to-machine client_credentials grant with scoped access (default, search, metrics, affinity, events, risk-events)
+- id: oidc
+  conforms: true
+  evidence: backing IdP is Keycloak at login.signal-ai.com/auth/realms/signal exposing a valid openid-configuration
+- id: openapi-3.1
+  conforms: true
+  evidence: document declares openapi 3.1.0 and self-serves it at /openapi.json
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: error responses are not documented as application/problem+json in the spec
+- id: cursor-pagination
+  conforms: true
+  evidence: search responses expose next-cursor with from-cursor/size request params
+- id: fhir-r4
+  conforms: false
+- id: scim2
+  conforms: false
+- id: fapi
+  conforms: false

@@ -1,0 +1,75 @@
+generated: '2026-07-21'
+method: derived
+source: openapi/signal-ai-openapi-original.json
+schemes:
+- name: OAuth2
+  source: openapi/signal-ai-openapi-original.json
+  flows:
+  - flow: clientCredentials
+    tokenUrl: https://api.signal-ai.com/auth/token
+  description: |-
+    To obtain the Bearer Token using the Client ID / Secret pair provided to you:
+
+    ```bash
+    curl -X POST \
+      -d 'grant_type=client_credentials' \
+      -d 'client_id=YOUR_CLIENT_ID' \
+      -d 'client_secret=YOUR_CLIENT_SECRET' \
+      https://api.signal-ai.com/auth/token
+    ```
+
+    This will return the following JSON response:
+
+    ```json
+    {
+        "access_token": "eyJhbGciOi…",
+        "expires_in": 86400,
+        …
+    }
+    ```
+
+    You must send the `access_token` from this response in the Authorization header when making requests to other API endpoints:
+
+    ```bash
+    curl -H "Authorization: Bearer eyJhbGciOi…" \
+      https://api.signal-ai.com/…
+    ```
+
+    Access tokens will expire 24 hours from the time they were issued.
+scopes:
+- scope: affinity
+  description: Access to concept affinity endpoints
+  flows:
+  - clientCredentials
+  sources:
+  - openapi/signal-ai-openapi-original.json
+- scope: default
+  description: Access to discovery endpoints
+  flows:
+  - clientCredentials
+  sources:
+  - openapi/signal-ai-openapi-original.json
+- scope: events
+  description: Access to events endpoint
+  flows:
+  - clientCredentials
+  sources:
+  - openapi/signal-ai-openapi-original.json
+- scope: metrics
+  description: Access to content metrics endpoint
+  flows:
+  - clientCredentials
+  sources:
+  - openapi/signal-ai-openapi-original.json
+- scope: risk-events
+  description: Access to risk events
+  flows:
+  - clientCredentials
+  sources:
+  - openapi/signal-ai-openapi-original.json
+- scope: search
+  description: Access to content search endpoint
+  flows:
+  - clientCredentials
+  sources:
+  - openapi/signal-ai-openapi-original.json

@@ -1,0 +1,28 @@
+generated: '2026-07-21'
+method: searched
+source: probed /.well-known/ on Signal AI API + auth hosts
+hosts:
+- host: https://api.signal-ai.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  # The API self-publishes its OpenAPI at the root instead of /.well-known/
+  - path: /openapi.json
+    status: 200
+    file: ../openapi/signal-ai-openapi-original.json
+- host: https://login.signal-ai.com
+  documents:
+  # Keycloak realm OIDC discovery backing the OAuth2 client-credentials flow
+  - path: /auth/realms/signal/.well-known/openid-configuration
+    status: 200
+    file: signal-ai-openid-configuration.json
+- host: https://signal-ai.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 404

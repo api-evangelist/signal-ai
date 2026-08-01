@@ -1,0 +1,84 @@
+generated: '2026-07-21'
+method: derived
+source: openapi/signal-ai-openapi-original.json
+notes: >-
+  Entity-relationship graph derived from OpenAPI component schemas ($ref links and
+  id-reference fields). Signal AI's model centers on Documents (news/regulatory
+  content) enriched against a Knowledge Graph of Concepts (Entities + Topics),
+  clustered into Events, and scored as Risk Events.
+entities:
+- name: Document
+  schema: Document
+  id_field: id
+  description: A single piece of ingested content (article, regulatory doc, social post).
+  relationships:
+  - belongs_to: Source
+    via: source
+  - has_many: Entity
+    via: entities
+  - has_many: Topic
+    via: topics
+  - has_many: Category
+    via: categories
+  - belongs_to: Story
+    via: story-id
+- name: Source
+  schema: Source
+  id_field: id
+  description: A publication source, with country/region/subregion location.
+  relationships:
+  - has_many: Document
+    via: source
+- name: Entity
+  schema: Entity
+  id_field: id
+  description: A knowledge-graph node representing a real-world entity (person, org, place); typed by EntityType.
+  relationships:
+  - has_many: Document
+    via: entities
+  - has_many: Event
+    via: entities
+- name: Topic
+  schema: Topic
+  id_field: id
+  description: A knowledge-graph node representing a topic/theme.
+  relationships:
+  - has_many: Document
+    via: topics
+  - has_many: Event
+    via: topics
+- name: Concept
+  schema: Concept
+  id_field: id
+  description: The generalized Affinity/Knowledge-Graph node (an Entity or a Topic, per ConceptTypeEnum); Affinity returns a source-concept and related concept edges.
+  relationships:
+  - has_many: Concept
+    via: results
+    kind: affinity-edge
+- name: Event
+  schema: Event
+  id_field: hash
+  description: A significant cluster of coverage (story) about entities/topics over a time window.
+  relationships:
+  - has_many: Document
+    via: story-ids
+  - has_many: Entity
+    via: entities
+  - has_many: Topic
+    via: topics
+- name: Category
+  schema: Category
+  id_field: id
+  description: IPTC Media Topics taxonomy category (deprecated surface).
+  relationships:
+  - has_many: Document
+    via: categories
+- name: RiskEvent
+  schema: RiskEventDocument
+  id_field: id
+  description: A risk-classified event/document scored against risk-event definitions.
+  relationships:
+  - belongs_to: RiskEventDefinition
+    via: definition
+  - has_many: Entity
+    via: entities

@@ -1,0 +1,22 @@
+generated: '2026-07-21'
+method: searched
+source: openapi/signal-ai-openapi-original.json + probed status page
+versioning:
+  scheme: unversioned-host
+  current: null
+  notes: >-
+    The API is served from an unversioned host (https://api.signal-ai.com) with no
+    version prefix in the paths; the OpenAPI document declares openapi 3.1.0.
+deprecation:
+  policy_url: null
+  sunset_header: false
+  notes: >-
+    No published deprecation policy or RFC 8594 Sunset/Deprecation header support was
+    found, but the OpenAPI marks specific operations and schemas as deprecated:true.
+status_page: https://signalai.statuspage.io
+sla:
+  url: null
+  uptime_target: null
+deprecated_operations:
+- openapi/signal-ai-openapi-original.json#get-categories-iptc
+- openapi/signal-ai-openapi-original.json#get-category-iptc

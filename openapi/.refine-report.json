@@ -1,0 +1,32 @@
+{
+  "provider": "signal-ai",
+  "sources": [
+    "signal-ai-affinity-api-openapi.yml",
+    "signal-ai-categories-api-openapi.yml",
+    "signal-ai-content-metrics-api-openapi.yml",
+    "signal-ai-content-search-api-openapi.yml",
+    "signal-ai-entities-api-openapi.yml",
+    "signal-ai-events-api-openapi.yml",
+    "signal-ai-openapi-json-api-openapi.yml",
+    "signal-ai-publication-sources-api-openapi.yml",
+    "signal-ai-risk-events-api-openapi.yml",
+    "signal-ai-topics-api-openapi.yml"
+  ],
+  "outputs": [
+    "signal-ai-affinity-api-openapi.yml",
+    "signal-ai-categories-api-openapi.yml",
+    "signal-ai-content-metrics-api-openapi.yml",
+    "signal-ai-content-search-api-openapi.yml",
+    "signal-ai-entities-api-openapi.yml",
+    "signal-ai-events-api-openapi.yml",
+    "signal-ai-openapi-json-api-openapi.yml",
+    "signal-ai-publication-sources-api-openapi.yml",
+    "signal-ai-risk-events-api-openapi.yml",
+    "signal-ai-topics-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}

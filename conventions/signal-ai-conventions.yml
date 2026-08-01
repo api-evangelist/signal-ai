@@ -1,0 +1,39 @@
+generated: '2026-07-21'
+method: derived
+source: openapi/signal-ai-openapi-original.json
+authentication:
+  style: oauth2-bearer
+  flow: client_credentials
+  token_endpoint: https://api.signal-ai.com/auth/token
+  header: 'Authorization: Bearer <access_token>'
+  token_ttl_seconds: 86400
+  scopes: [default, search, metrics, affinity, events, risk-events]
+  ref: authentication/signal-ai-authentication.yml
+idempotency:
+  supported: false
+  notes: No documented Idempotency-Key header or idempotent-write contract in the OpenAPI.
+pagination:
+  style: cursor
+  request_params:
+  - from-cursor
+  - size
+  response_fields:
+  - next-cursor
+  notes: >-
+    Search-style responses (documents, events, risk events) return a base64 next-cursor;
+    pass it back as from-cursor to page forward. `size` controls page size.
+metadata:
+  request_id_header: null
+  notes: No request-id / correlation header documented.
+versioning:
+  style: unversioned-host
+  ref: lifecycle/signal-ai-lifecycle.yml
+error_envelope:
+  media_type: application/json
+  format: non-rfc9457
+  notes: Error responses are JSON but not documented as application/problem+json.
+rate_limiting:
+  signaled: unknown
+  notes: No rate-limit response headers documented in the spec.
+data_model:
+  ref: data-model/signal-ai-data-model.yml

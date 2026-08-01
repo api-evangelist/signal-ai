@@ -1,0 +1,48 @@
+# signal-ai.com llms.txt
+
+- [Reputation Dashboards](https://signal-ai.com/solutions/reputation-dashboard): Provide AI-powered dashboards for monitoring and analyzing brand reputation, competitors, and industry insights.
+- [DOGE Impact Assessment Report](https://signal-ai.com/insights/resource/report-the-business-guide-to-doge-impact-assessment-and-strategic-response): Analyze DOGE's federal impact, media narrative, and strategic responses for organizations to navigate challenges.
+- [AI for Consumer Insights](https://signal-ai.com/insights/how-ai-recognizes-real-consumer-behaviors-with-doug-rubin-of-northwind-climate): Discusses using AI and data to understand consumer behavior for scaling sustainable business models.
+- [Advanced AI Dashboards](https://signal-ai.com/solutions/advanced-dashboards): Provide AI-powered advanced dashboards for industry reputation, risk management, and custom data visualizations.
+- [AI Risk Briefings](https://signal-ai.com/solutions/risk-briefings): Deliver AI-curated risk intelligence briefings to proactively identify and mitigate emerging business risks.
+- [Signal AI Partnerships](https://signal-ai.com/partnerships): Encourage and facilitate partnerships to integrate and expand AI-driven intelligence solutions and data offerings.
+- [Signal AI Media Newsletters](https://signal-ai.com/solutions/media-newsletters): Deliver curated, customized media insights and reports to inform stakeholders and track company reputation.
+- [AI Enterprise Risk Intelligence](https://signal-ai.com/expertise/risk-audit): Provide AI-driven tools for enterprise risk detection, monitoring, and strategic risk management.
+- [Signal AI Legal Policy](https://signal-ai.com/legal-policy): Provide access to Signal AI's comprehensive legal policies and contact information.
+- [Real-Time AI Alerts](https://signal-ai.com/solutions/alerts): Deliver real-time, customizable alerts to monitor risks, track trends, and support smarter business decisions.
+- [Careers at Signal AI](https://signal-ai.com/careers): Showcase career opportunities, benefits, and interview process at Signal AI for prospective employees.
+- [Commitment to Responsible AI](https://signal-ai.com/approach/commitment-to-responsible-ai): Detailing Signal AI's ethical approach to AI, emphasizing transparency, data quality, user empowerment, and responsible innovation.
+- [SThree STEM Report Impact](https://signal-ai.com/insights/how-sthrees-stem-report-earned-22-2m-impressions-with-signal-ai-topic-analysis): Showcases how Signal AI's analytics enhanced SThree's STEM workforce report and amplified its impact.
+- [Instinctif & Signal AI Case Study](https://signal-ai.com/insights/how-instinctif-applies-advanced-analytics-to-share-more-valuable-insights-with-clients): Showcases how Instinctif Partners leverages Signal AI's advanced analytics to enhance strategic communication and reputation management.
+- [AI-Powered Newsletters](https://signal-ai.com/solutions/newsletters): Deliver curated AI-driven media and social newsletters providing insights and alerts tailored for businesses.
+- [Risk Intelligence Platform](https://signal-ai.com/solutions/webapp/risk-intelligence-platform): Provide AI-powered platform for continuous global risk monitoring and intelligence to mitigate business threats proactively.
+- [Ask AIQ Webinar](https://signal-ai.com/insights/resource/webinar-meet-ask-aiq-the-first-ai-agent-for-reputation-risk-intelligence): Showcase and explain the Ask AIQ AI agent webinar for reputation and risk intelligence insights.
+- [CCO Webinar Spotlight](https://signal-ai.com/insights/resource/cco-spotlight-trust-influence-impact-with-ilana-finley-cco-of-liv-golf): Showcase a webinar with Ilana Finley discussing trust, influence, and impact in corporate communications.
+- [Configurable Sentiment Analysis](https://signal-ai.com/insights/the-power-of-personalized-sentiment-analysis-introducing-signal-ais-configurable-sentiment): Explain and promote Signal AI’s customizable sentiment analysis feature for improved media monitoring and communications reporting.
+- [AI Risk and Reputation Insights](https://signal-ai.com): Provide AI-driven insights to manage enterprise risk, reputation, PR, and regulatory compliance globally.
+- [AI for Reputation Risk](https://signal-ai.com/insights/resource/guide-5-ways-ai-empowers-reputation-risk-management): Explain how AI enhances reputation risk management through five key transformative areas.
+- [AI-Driven ESG Analytics](https://signal-ai.com/expertise/esg): Provide AI-powered analytics and tools to assess and monitor ESG risks, reputation, and opportunities for organizations and investors.
+- [Solving AI Limitations with RAG](https://signal-ai.com/insights/ai-has-limitations-heres-how-retrieval-augmented-generation-rag-helps-solve-them): Explain how retrieval-augmented generation (RAG) improves AI accuracy, reliability, and compliance for business use.
+- [Signal AI Approach](https://signal-ai.com/approach): Explain Signal AI’s proprietary AI technology that delivers real-time business insights from global content.
+- [Data Powering Insights](https://signal-ai.com/data-powering-global-insight/%20): Showcase Signal AI’s data sources powering global AI-driven insights across media, social, regulatory, and broadcast content.
+- [AI Reputation Intelligence](https://signal-ai.com/expertise/prcomms): Provide AI-powered insights and tools to manage and enhance corporate reputation and communications strategies.
+- [Regulation Monitoring AI](https://signal-ai.com/expertise/regulation-tax): Provide AI-powered regulatory monitoring and insights to help businesses anticipate and respond to global regulatory changes effectively.
+- [Signal AI Web App](https://signal-ai.com/solutions/webapp): Provide AI-powered insights and tools to enhance decision-making, risk management, and market analysis.
+- [Reputation Reports](https://signal-ai.com/solutions/reputation-reports): Provide AI-driven reputation benchmarking and competitor insights to enhance brand strategy and risk management.
+- [Amnesty International Case Study](https://signal-ai.com/insights/how-amnesty-international-uses-signal-ai-to-drive-change): Showcases how Amnesty International uses Signal AI for real-time media monitoring and data-driven impact reporting.
+- [Contact Signal AI](https://signal-ai.com/contact-us): Enable users to contact Signal AI for inquiries, demos, and business support.
+- [Ask AIQ: AI Reputation Intelligence](https://signal-ai.com/solutions/ask-aiq): Provide AI-powered reputation and risk intelligence with instant, compliant, and detailed insights for business decision-making.
+- [About Signal AI](https://signal-ai.com/about): Showcase Signal AI's mission, values, leadership, and career opportunities in AI-driven reputation and risk intelligence.
+- [Email Protection by Cloudflare](https://signal-ai.com/cdn-cgi/l/email-protection): Explain Cloudflare's email protection and prompt users to enable Javascript for email decoding.
+- [Signal AI API Suite](https://signal-ai.com/solutions/api): Provide API access to Signal AI's data and analytics for integration into business intelligence solutions.
+- [Premium Social Monitoring](https://signal-ai.com/insights/social-media-monitoring-that-cuts-through-the-noise-meet-premium-social): Explain how Signal AI’s Premium Social monitoring enhances brand reputation management by filtering key social media voices.
+- [Signal AI 2024 Innovations](https://signal-ai.com/insights/2024-at-signal-ai-another-year-of-ai-innovation): Showcase Signal AI's 2024 innovations and preview upcoming AI-driven insight features for 2025.
+- [Understanding Media Impact Scores](https://signal-ai.com/insights/what-is-a-media-impact-score-an-essential-pr-metric-to-measure-reputation): Explain Media Impact Scores as a key PR metric to quantify reputation and communication effectiveness using AI-driven data.
+- [AI & Risk Insights](https://signal-ai.com/insights): Provide insights and resources on AI, risk, reputation, and enterprise intelligence topics.
+- [AI-Powered Insight Reports](https://signal-ai.com/solutions/reports): Deliver AI-powered reports and expert analysis to help decision-makers monitor reputation, track performance, and manage risks.
+- [Media Impact Reports](https://signal-ai.com/solutions/media-impact-reports): Provide AI-driven media impact analysis to measure, benchmark, and improve PR and marketing performance.
+- [Signal AI Risk Reports](https://signal-ai.com/solutions/risk-reports): Provide AI-powered risk reports for proactive, data-driven enterprise risk management and strategic decision-making.
+- [Deep Dive Reports](https://signal-ai.com/solutions/deep-dive-reports): Provide AI-driven, expert-analyzed reports to deliver tailored insights on industry trends and strategic opportunities.
+- [Data Powering Insights](https://signal-ai.com/approach/data-powering-global-insight): Describe Signal AI's data sources powering AI-driven global insights across media, social, regulatory, and broadcast content.
+- [Reputation Risk Reports](https://signal-ai.com/solutions/reputation-risk-reports): Provide AI-driven Reputation Risk Reports to help businesses detect, assess, benchmark, and mitigate brand risks proactively.
+- [Reputation Risk Intelligence](https://signal-ai.com/expertise/reputation-risk): Provide AI-powered tools and insights to identify, monitor, and manage reputational risks effectively.

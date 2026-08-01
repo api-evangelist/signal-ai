@@ -1,7 +1,14 @@
 aid: signal-ai
 name: Signal AI
-description: Signal AI is a company surfaced as a portfolio company of battery-ventures and added to the
-  API Evangelist network as a stub for enrichment. This profile is a lead awaiting the enrichment pipeline.
+description: >-
+  Signal AI (Signal Media Ltd) is an AI-powered reputation and risk intelligence
+  platform that turns the world's largest real-time dataset of global news, social,
+  broadcast and regulatory content into actionable insight. Its proprietary AIQ
+  framework understands, enriches and surfaces relevant coverage across 226 markets
+  and 120+ languages, ingesting 5.5M+ articles and labelling 100M+ entities and topics
+  daily. The Signal AI API is an HTTP+JSON API offering programmatic access to the
+  platform via Content Search, Content Metrics, Affinity (the Signal AI Knowledge
+  Graph), Events, and Risk Events endpoints, secured with OAuth2 client-credentials.
 url: https://raw.githubusercontent.com/api-evangelist/signal-ai/refs/heads/main/apis.yml
 x-type: company
 x-source: vc-portfolio
@@ -9,14 +16,400 @@ x-backed-by:
 - battery-ventures
 x-tier: stub
 x-tier-reason: portfolio-lead
+accessModel:
+  pricing: unknown
+  onboarding: self-serve
+  trial: false
+  try_now: false
+  public: false
+  label: Self-serve signup
+  confidence: medium
+  source:
+  - authentication
+  generated: '2026-07-22'
+  method: derived
 specificationVersion: '0.20'
 created: '2026-07-17'
-modified: '2026-07-17'
+modified: '2026-07-21'
 tags:
 - Company
-apis: []
+- Media Intelligence
+- Reputation Management
+- Risk Intelligence
+- News
+- Content Search
+- Knowledge Graph
+- ESG
+- Artificial Intelligence
+- Analytics
+image: https://login.signal-ai.com/auth/resources/hlcwe/login/signal/img/apple-touch-icon.png
+apis:
+- aid: signal-ai:signal-ai-affinity-api
+  name: Signal AI Affinity API
+  description: >-
+    The Affinity API endpoints allow API users to leverage the power of the Signal
+
+    AI Knowledge Graph, derived from billions of documents and updated regularly.
+
+
+    The Signal AI Knowledge Graph consists of:
+
+    * **nodes** which represent concepts such as entities and topics
+
+    * **edges** represent connections describing relationships between these concepts
+
+
+    Using the Affinity API, users can retrieve data for hundreds of thousands of
+
+    entities and topics. The sole relationship type currently accessible via the
+
+    Affinity API is proximity.
+
+
+    ## Proximity
+
+
+    Proximity represents how closely entities and topics are associated in the news
+
+    and other types of content processed by Signal AI.
+
+
+    ### What is proximity?
+
+
+    The proximity between an entity (e.g. Tesla) and a topic (e.g. Product recall) is a measure of how
+    they are related over a period of time (e.g. a certain month) as perceived in the news (almost all
+    sources we ingest into the Signal platform). It reflects the likelihood of the entity and topic in
+    question being mentioned together, with 0 meaning the two are very unlikely to appear together, and
+    1 meaning they are most likely to appear together (NB: the scale is not linear.) We measure this by
+    observing the mentions of the topic, the (salient) mentions of the entity and their (salient) co-mentions.
+    As opposed to relying only on the volume of co-mentions, the proximity score captures how significant
+    these co-mentions are based on the overall volume of coverage for both the entity and the topic. **For
+    example, if the entity has a high number of co-mentions with a topic, but the topic is very common
+    (e.g Social Media), we may assign a low proximity score. On the other hand if there are only a few
+    co-mentions with a very niche topic, we may assign a high proximity score.**
+
+
+    The proximity score is based on the normalized Google Distance (from Information distance theory)
+    and it has a value between 0 and 1:
+
+    - A score of 0 means the two concepts are not related and never or rarely co-mentioned together;
+
+    - The higher the score is, the more related the concepts are and the higher the chance is of observing
+    significant co-mentions.
+
+    - A proximity close to 1 means that if one of the concepts is mentioned in an article, it is most
+    likely that the other concept will also be mentioned in the article.
+
+
+    To illustrate how proximity is implemented, consider this conceptual representation of the Signal
+    AI Knowledge Graph below:
+
+
+    ![](/assets/img/affinity_example.svg)
+
+
+    In this graph, we see four nodes: two organizations (PepsiCo and American Chemical Society) and two
+    topics (Food and Beverage and Chemicals).
+
+
+    We also see three edges each representing a proximity relationship: (PepsiCo and Food and Beverage),
+    (PepsiCo and Chemicals) and (American Chemical Society and Chemicals). We can infer from these edges
+    that PepsiCo has a closer association to Food and Beverage than Chemicals. Also we can infer that
+    American Chemical Society has a stronger connection to Chemicals than PepsiCo.
+
+
+    ### Using the proximity score
+
+
+    The proximity score can be used in different ways:
+
+
+    #### 1. Discovery
+
+
+    We can identify the closest topics to an entity by ranking them according to their proximity score.
+    Note that if we simply use the volume of co-mentions to rank topics, we will end up with the common
+    topics (which might be considered noise).
+
+
+    Likewise, we can do the opposite and identify the organizations (or any other type of entities) that
+    are closest to a certain topic. Note, if we simply use the volume of co-mentions to rank organizations,
+    we will end up with the common ones which are often mentioned in news articles, e.g. BBC, NASDAQ,
+    UK, US
+
+
+
+    #### 2. Comparison
+
+
+    - **Comparing Entities**: We can compare two entities on how they are related to certain topics, ie.
+    which one is more related. A higher proximity score means more relatedness to a topic. Note that this
+    is different from comparing them based on the volume (number of articles on topic). For example one
+    big company may have way more articles on a topic than a smaller company, but the smaller company
+    may have a higher proximity. This is  because it has way fewer mentions than the big company overall
+    and a few articles on the topic contribute to a higher proximity score.
+
+    - **Comparing Topics**: Likewise, we can compare two topics on how they are related to certain entities.
+    A higher proximity score means more relatedness to an entity.
+
+    - **Comparison over time**: We can say if the proximity between an entity and topic has increased
+    or decreased from one month to another by comparing their proximity score in those months.
+
+
+    NB: While the proximity scores are ordered, they are not linear. *This means you can't easily interpret
+    the difference between proximity scores i.e. the difference between 0 and 0.1 proximity is not the
+    same as the difference between 0.4 and 0.5 proximity.*
+
+
+    ### Proximity metadata
+
+
+    Each proximity relationship returned contains the following metadata:
+
+    - `proximity-score`: the proximity score in the range `[0..1]` as described above
+
+    - `sentiment-score`: for a proximity relationship between an entity and a topic, this score represents
+    the sentiment towards the entity with regards to its relationship to the topic. The sentiment score
+    ranges between `[-1..1]` and is computed as follows (taking into account salient entity mentions only:
+      ```
+      #(positive entity/topic co-mentions) - #(negative entity/topic co-mentions) /  #(entity/topic co-mentions)
+      ```
+
+    ### Using proximity
+
+
+    Using proximity relationships, one can uncover unknowns and insights on a large scale. The API offers
+    one endpoint to allow the users to query and explore proximity relationships.
+
+
+    Please note that only the last 15 months of data can be queried.
+  humanURL: https://signal-ai.com/solutions/api
+  baseURL: https://api.signal-ai.com
+  tags:
+  - Affinity
+  properties:
+  - type: OpenAPI
+    url: openapi/signal-ai-affinity-api-openapi.yml
+  - type: Documentation
+    url: https://api.signal-ai.com/docs
+  - type: APIReference
+    url: https://api.signal-ai.com/docs
+- aid: signal-ai:signal-ai-categories-api
+  name: Signal AI Categories API
+  description: The Categories API from Signal AI — 2 operation(s) for categories.
+  humanURL: https://signal-ai.com/solutions/api
+  baseURL: https://api.signal-ai.com
+  tags:
+  - Categories
+  properties:
+  - type: OpenAPI
+    url: openapi/signal-ai-categories-api-openapi.yml
+  - type: Documentation
+    url: https://api.signal-ai.com/docs
+  - type: APIReference
+    url: https://api.signal-ai.com/docs
+- aid: signal-ai:signal-ai-content-metrics-api
+  name: Signal AI Content Metrics API
+  description: The Content Metrics API from Signal AI — 1 operation(s) for content metrics.
+  humanURL: https://signal-ai.com/solutions/api
+  baseURL: https://api.signal-ai.com
+  tags:
+  - Content Metrics
+  properties:
+  - type: OpenAPI
+    url: openapi/signal-ai-content-metrics-api-openapi.yml
+  - type: Documentation
+    url: https://api.signal-ai.com/docs
+  - type: APIReference
+    url: https://api.signal-ai.com/docs
+- aid: signal-ai:signal-ai-content-search-api
+  name: Signal AI Content Search API
+  description: The Content Search API from Signal AI — 2 operation(s) for content search.
+  humanURL: https://signal-ai.com/solutions/api
+  baseURL: https://api.signal-ai.com
+  tags:
+  - Content Search
+  properties:
+  - type: OpenAPI
+    url: openapi/signal-ai-content-search-api-openapi.yml
+  - type: Documentation
+    url: https://api.signal-ai.com/docs
+  - type: APIReference
+    url: https://api.signal-ai.com/docs
+- aid: signal-ai:signal-ai-entities-api
+  name: Signal AI Entities API
+  description: The Entities API from Signal AI — 2 operation(s) for entities.
+  humanURL: https://signal-ai.com/solutions/api
+  baseURL: https://api.signal-ai.com
+  tags:
+  - Entities
+  properties:
+  - type: OpenAPI
+    url: openapi/signal-ai-entities-api-openapi.yml
+  - type: Documentation
+    url: https://api.signal-ai.com/docs
+  - type: APIReference
+    url: https://api.signal-ai.com/docs
+- aid: signal-ai:signal-ai-events-api
+  name: Signal AI Events API
+  description: >-
+    The Events API endpoint identifies significant clusters of news coverage about entities and topics
+    of interest, allowing users to easily identify news events that could impact them or their business,
+    and offering a qualitative deep dive into the quantitative data provided by Metrics and Affinity.
+    By leveraging the 15-month archive, users can easily get up to speed on the recent developments involving
+    specific companies, industries or topics.
+
+
+    Examples of questions this data can answer include:
+
+
+    * Have there been any events involving Company X in the past day/month/year/15 months?
+
+    * What are the latest developments in the food and beverage industry?
+
+    * Have there been any product recalls recently?
+
+
+    The data returned includes entities and topics involved, their prominence scores, alongside the number
+    of stories describing the event (a measure of "newsworthiness"), and a group of the most descriptive
+    labels.
+
+
+    The data is generated daily.
+
+
+    ## Event hashes
+
+    Each event contains a `hash` field. You can look up events by hash using the `/events/{hash}` endpoint.
+    The difference between the data returned in this endpoint compared with `/events` is as follows:
+
+
+    * All story ids for the event are returned not just the top 100
+
+    * The source ids for the event are included
+
+
+    In APIs it's more common to use the term "id" rather than "hash". We've chosen to use "hash" because
+    these strings can change as we receive new data. In the `/events` endpoint the `event-hash-expiry`
+    field indicates when the hash will expire. Note that it could still be available after this time.
+  humanURL: https://signal-ai.com/solutions/api
+  baseURL: https://api.signal-ai.com
+  tags:
+  - Events
+  properties:
+  - type: OpenAPI
+    url: openapi/signal-ai-events-api-openapi.yml
+  - type: Documentation
+    url: https://api.signal-ai.com/docs
+  - type: APIReference
+    url: https://api.signal-ai.com/docs
+- aid: signal-ai:signal-ai-openapi-json-api
+  name: Signal AI Openapi.json API
+  description: The Openapi.json API from Signal AI — 1 operation(s) for openapi.json.
+  humanURL: https://signal-ai.com/solutions/api
+  baseURL: https://api.signal-ai.com
+  tags:
+  - Openapi.json
+  properties:
+  - type: OpenAPI
+    url: openapi/signal-ai-openapi-json-api-openapi.yml
+  - type: Documentation
+    url: https://api.signal-ai.com/docs
+  - type: APIReference
+    url: https://api.signal-ai.com/docs
+- aid: signal-ai:signal-ai-publication-sources-api
+  name: Signal AI Publication sources API
+  description: The Publication sources API from Signal AI — 3 operation(s) for publication sources.
+  humanURL: https://signal-ai.com/solutions/api
+  baseURL: https://api.signal-ai.com
+  tags:
+  - Publication sources
+  properties:
+  - type: OpenAPI
+    url: openapi/signal-ai-publication-sources-api-openapi.yml
+  - type: Documentation
+    url: https://api.signal-ai.com/docs
+  - type: APIReference
+    url: https://api.signal-ai.com/docs
+- aid: signal-ai:signal-ai-risk-events-api
+  name: Signal AI Risk Events API
+  description: The Risk Events API from Signal AI — 3 operation(s) for risk events.
+  humanURL: https://signal-ai.com/solutions/api
+  baseURL: https://api.signal-ai.com
+  tags:
+  - Risk Events
+  properties:
+  - type: OpenAPI
+    url: openapi/signal-ai-risk-events-api-openapi.yml
+  - type: Documentation
+    url: https://api.signal-ai.com/docs
+  - type: APIReference
+    url: https://api.signal-ai.com/docs
+- aid: signal-ai:signal-ai-topics-api
+  name: Signal AI Topics API
+  description: The Topics API from Signal AI — 2 operation(s) for topics.
+  humanURL: https://signal-ai.com/solutions/api
+  baseURL: https://api.signal-ai.com
+  tags:
+  - Topics
+  properties:
+  - type: OpenAPI
+    url: openapi/signal-ai-topics-api-openapi.yml
+  - type: Documentation
+    url: https://api.signal-ai.com/docs
+  - type: APIReference
+    url: https://api.signal-ai.com/docs
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
+common:
+- type: DomainSecurity
+  url: security/signal-ai-domain-security.yml
+- type: Authentication
+  url: authentication/signal-ai-authentication.yml
+- type: OAuthScopes
+  url: scopes/signal-ai-scopes.yml
+- type: DeveloperPortal
+  url: https://signal-ai.com/solutions/api
+- type: Documentation
+  url: https://api.signal-ai.com/docs
+- type: Blog
+  url: https://signal-ai.com/insights
+- type: Support
+  url: https://signal-ai.com/contact-us
+- type: Login
+  url: https://app.signal-ai.com/
+- type: TermsOfService
+  url: https://signal-ai.com/legal-policy
+- type: PrivacyPolicy
+  url: https://signal-ai.com/legal-policy
+- type: StatusPage
+  url: https://signalai.statuspage.io
+- type: LLMsTxt
+  url: llms/signal-ai-llms.txt
+- type: WellKnown
+  url: well-known/signal-ai-well-known.yml
+- type: MCPServer
+  url: mcp/signal-ai-mcp.yml
+- type: Overlay
+  url: overlays/signal-ai-openapi-overlay.yaml
+- type: Conformance
+  url: conformance/signal-ai-conformance.yml
+- type: Lifecycle
+  url: lifecycle/signal-ai-lifecycle.yml
+- type: Deprecation
+  url: lifecycle/signal-ai-lifecycle.yml
+- type: Conventions
+  url: conventions/signal-ai-conventions.yml
+- type: DataModel
+  url: data-model/signal-ai-data-model.yml
+- type: AgentSkill
+  url: skills/_index.yml
+x-enrichment:
+  date: '2026-07-21'
+  status: enriched
+  artifacts_added: 17
+  pass: local-v1
