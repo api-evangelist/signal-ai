@@ -17,20 +17,27 @@ x-backed-by:
 x-tier: stub
 x-tier-reason: portfolio-lead
 accessModel:
-  pricing: unknown
-  onboarding: self-serve
+  pricing: contact-sales
+  onboarding: sales-gated
   trial: false
   try_now: false
   public: false
-  label: Self-serve signup
-  confidence: medium
+  label: Contact sales
+  confidence: high
   source:
-  - authentication
-  generated: '2026-07-22'
-  method: derived
+  - plans/signal-ai-plans-pricing.yml
+  - https://signal-ai.com/solutions/api
+  notes: >-
+    Corrected 2026-08-13. The prior "self-serve signup" reading was derived from the
+    presence of an OAuth2 client-credentials flow, but Signal AI issues the Client ID
+    / Client Secret pair to contracted customers ("provided to you", per the OpenAPI
+    securityScheme description); /pricing and /plans both 404 and the API product page
+    ends in a "Request a demo" CTA. There is no signup that yields working credentials.
+  generated: '2026-08-13'
+  method: searched
 specificationVersion: '0.20'
 created: '2026-07-17'
-modified: '2026-07-21'
+modified: '2026-08-13'
 tags:
 - Company
 - Media Intelligence
@@ -360,6 +367,25 @@ apis:
     url: https://api.signal-ai.com/docs
   - type: APIReference
     url: https://api.signal-ai.com/docs
+- aid: signal-ai:signal-ai-organisation-api
+  name: Signal AI Organisation API
+  description: >-
+    Organisation administration for the Signal AI API. `GET /users` returns all users
+    in the organisation of the authenticated API credential, and requires a credential
+    carrying the `manage-organisation` capability, which Signal AI grants to organisation
+    administrators. New in the live OpenAPI as of 2026-08-13 and absent from the published
+    changelog, whose newest entry is still v1.4 (04/04/2023).
+  humanURL: https://signal-ai.com/solutions/api
+  baseURL: https://api.signal-ai.com
+  tags:
+  - Organisation
+  properties:
+  - type: OpenAPI
+    url: openapi/signal-ai-organisation-api-openapi.yml
+  - type: Documentation
+    url: https://api.signal-ai.com/docs
+  - type: APIReference
+    url: https://api.signal-ai.com/docs
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
@@ -408,8 +434,28 @@ common:
   url: data-model/signal-ai-data-model.yml
 - type: AgentSkill
   url: skills/_index.yml
+- type: Packages
+  url: packages/signal-ai-packages.yml
+- type: ErrorCatalog
+  url: errors/signal-ai-problem-types.yml
+- type: RateLimits
+  url: rate-limits/signal-ai-rate-limits.yml
+- type: Plans
+  url: plans/signal-ai-plans-pricing.yml
+- type: ChangeLog
+  url: changelog/signal-ai-changelog.yml
+- type: ToolCrosswalk
+  url: mcp/signal-ai-tool-crosswalk.yml
+- type: APIReference
+  url: https://api.signal-ai.com/docs
+- type: GitHubOrganization
+  url: https://github.com/signal-ai
+- type: SourceCode
+  url: https://github.com/signal-ai/signal-api-tools
+- type: GettingStarted
+  url: https://github.com/signal-ai/signal-api-tools#getting-started-with-the-signal-ai-api
 x-enrichment:
-  date: '2026-07-21'
+  date: '2026-08-13'
   status: enriched
-  artifacts_added: 17
+  artifacts_added: 9
   pass: local-v1
