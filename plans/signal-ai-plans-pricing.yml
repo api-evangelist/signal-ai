@@ -1,0 +1,35 @@
+generated: '2026-08-13'
+method: searched
+source: https://signal-ai.com/solutions/api
+plan_count: 0
+model: enterprise-contact-only
+currency: null
+free_tier: false
+trial: false
+self_serve_signup: false
+notes: >-
+  Signal AI publishes no pricing at all — no price, no tier names, no included
+  quota, no overage. The API product page (https://signal-ai.com/solutions/api,
+  HTTP 200) ends in a "Request a demo" call to action, and the site-wide
+  llms.txt Signal AI itself serves at https://signal-ai.com/llms.txt (HTTP 200)
+  enumerates 45 pages with no pricing or plans page among them. API credentials
+  are a Client ID / Client Secret pair "provided to you" (per the OpenAPI
+  securityScheme description) rather than self-issued, which confirms
+  sales-mediated onboarding: there is no signup flow that produces working
+  credentials without a Signal AI contract. Recorded as an honest zero, not an
+  omission.
+probes:
+- url: https://signal-ai.com/pricing
+  status: 404
+- url: https://signal-ai.com/plans
+  status: 404
+- url: https://signal-ai.com/solutions/api
+  status: 200
+  finding: no pricing; "Request a demo" CTA only
+- url: https://signal-ai.com/llms.txt
+  status: 200
+  finding: 45 URLs listed, none is a pricing or plans page
+contact:
+  demo: https://signal-ai.com/demo
+  sales: https://signal-ai.com/contact-us
+plans: []

@@ -1,0 +1,91 @@
+generated: '2026-08-13'
+method: searched
+source: https://api.signal-ai.com/docs
+source_detail: >-
+  Published verbatim in the "Rate Limiting" section of the Signal AI API
+  reference, which is rendered from info.description of
+  https://api.signal-ai.com/openapi.json (fetched 2026-08-13, HTTP 200).
+scope_model: per-endpoint, per-Client ID
+limit_count: 4
+limits:
+- name: Content search
+  scope: per-endpoint-per-client-id
+  endpoints:
+  - POST /search
+  window: second
+  limit: 2
+- name: Content search
+  scope: per-endpoint-per-client-id
+  endpoints:
+  - POST /search
+  window: minute
+  limit: 30
+- name: Content metrics
+  scope: per-endpoint-per-client-id
+  endpoints:
+  - POST /metrics
+  window: second
+  limit: 2
+- name: Content metrics
+  scope: per-endpoint-per-client-id
+  endpoints:
+  - POST /metrics
+  window: minute
+  limit: 15
+- name: Concept affinity
+  scope: per-endpoint-per-client-id
+  endpoints:
+  - POST /affinity
+  window: second
+  limit: 2
+- name: Concept affinity
+  scope: per-endpoint-per-client-id
+  endpoints:
+  - POST /affinity
+  window: minute
+  limit: 30
+- name: All others
+  scope: per-endpoint-per-client-id
+  endpoints:
+  - GET /topics
+  - GET /topics/{id}
+  - GET /entities
+  - GET /entities/{id}
+  - GET /sources
+  - GET /sources/{id}
+  - GET /source-locations
+  - GET /categories/iptc-media-topics
+  - POST /events
+  - GET /events/{hash}
+  - POST /risk-events-search
+  - POST /risk-events-scores
+  - GET /risk-events-definitions
+  - GET /users
+  window: second
+  limit: 5
+- name: All others
+  scope: per-endpoint-per-client-id
+  endpoints:
+  - all endpoints not listed above
+  window: minute
+  limit: 60
+exhaustion:
+  status_code: 429
+  documented_as: >-
+    "429 – Too many requests: The server received too many requests in the last
+    second or minute."
+  retry_guidance: >-
+    Not stated in the reference. The first-party `signal-api-tools` client treats
+    429 as a retryable (non-fatal) status and backs off.
+response_headers:
+  documented: false
+  observed: []
+  notes: >-
+    Signal AI documents NO rate-limit response headers — no `X-RateLimit-*`, no
+    RFC 9331 `RateLimit-*`, no `Retry-After`. An unauthenticated
+    GET https://api.signal-ai.com/topics (probed 2026-08-13, HTTP 401) returned
+    only `signal-version: 1` plus standard Cloudflare/security headers, so no
+    runtime budget signal could be observed anonymously either. A client cannot
+    see how much of its per-second/per-minute allowance remains; it can only
+    count its own calls against the published table or wait for a 429. This is
+    the gap between a documented limit and an agent-usable one.

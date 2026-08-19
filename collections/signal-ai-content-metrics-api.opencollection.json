@@ -1,0 +1,53 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Signal AI Affinity Content Metrics API",
+    "version": "v1.3"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "https://api.signal-ai.com/auth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Content Metrics",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Metrics API for aggregated analytics",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.signal-ai.com/metrics",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "client_credentials",
+              "accessTokenUrl": "https://api.signal-ai.com/auth/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "## Metrics\n\nThe Metrics API provides at-a-glance analytics over all our news & regulatory content. It allows users to monitor, visualise and understand news coverage over time, and enables direct integration with Business Intelligence & data visualisation tools\n\nThe `/metrics` endpoint supports the same expressive query language as our `/search` endpoint, but rather than returning metadata for each individual piece of content, provides aggregated metrics over the results which can be sliced and "
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

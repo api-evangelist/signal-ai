@@ -1,7 +1,40 @@
-generated: '2026-07-21'
-method: searched
-source: probed /.well-known/ on Signal AI API + auth hosts
+generated: '2026-08-13'
+method: probed
+source: probed /.well-known/ on the Signal AI API, MCP, auth and marketing hosts
+notes: >-
+  Signal AI serves NO /.well-known/ document from its API host or its marketing
+  host — every path 404s there. The real well-known surface is on the MCP host:
+  https://mcp.signal-ai.com serves both RFC 9728 OAuth protected-resource
+  metadata and RFC 8414 authorization-server metadata anonymously, and answers an
+  unauthenticated MCP call with a spec-correct
+  `WWW-Authenticate: Bearer resource_metadata=...` challenge pointing at that
+  document. The auth host (Keycloak) serves standard OIDC discovery.
 hosts:
+- host: https://mcp.signal-ai.com
+  documents:
+  - path: /.well-known/oauth-protected-resource
+    status: 200
+    content_type: application/json
+    file: signal-ai-oauth-protected-resource.json
+    note: RFC 9728. Declares resource https://mcp.signal-ai.com, authorization server
+      https://login.signal-ai.com/auth/realms/signal, and scopes_supported [openid,
+      mcp:tools, offline_access].
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    content_type: application/json
+    file: signal-ai-oauth-authorization-server.json
+    note: RFC 8414. Keycloak realm `signal`; grant types include client_credentials
+      and authorization_code with PKCE (S256).
+  - path: /.well-known/agent-card.json
+    status: 401
+    note: Not an A2A agent card — the host's blanket JWT gate answers every unmatched
+      path with {"error":"Jwt is missing"}. No agent card asserted.
+- host: https://login.signal-ai.com
+  documents:
+  - path: /auth/realms/signal/.well-known/openid-configuration
+    status: 200
+    file: signal-ai-openid-configuration.json
+    note: Keycloak realm OIDC discovery backing the OAuth2 client-credentials flow.
 - host: https://api.signal-ai.com
   documents:
   - path: /.well-known/security.txt
@@ -12,17 +45,29 @@ hosts:
     status: 404
   - path: /.well-known/api-catalog
     status: 404
-  # The API self-publishes its OpenAPI at the root instead of /.well-known/
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+  - path: /llms.txt
+    status: 404
   - path: /openapi.json
     status: 200
-    file: ../openapi/signal-ai-openapi-original.json
-- host: https://login.signal-ai.com
-  documents:
-  # Keycloak realm OIDC discovery backing the OAuth2 client-credentials flow
-  - path: /auth/realms/signal/.well-known/openid-configuration
-    status: 200
-    file: signal-ai-openid-configuration.json
+    content_type: application/json
+    file: ../openapi/_original/signal-ai-openapi-original.json
+    note: The API self-publishes its full OpenAPI 3.1.0 at the host root instead of
+      under /.well-known/.
 - host: https://signal-ai.com
   documents:
   - path: /.well-known/security.txt
     status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+  - path: /llms.txt
+    status: 200
+    content_type: text/plain
+    file: ../llms/signal-ai-llms.txt
+    note: Provider-published llms.txt, saved verbatim. Not a /.well-known/ path but
+      recorded here as part of the same discovery sweep.

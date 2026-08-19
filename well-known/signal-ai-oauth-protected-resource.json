@@ -1,0 +1,6 @@
+{
+  "resource": "https://mcp.signal-ai.com",
+  "authorization_servers": ["https://login.signal-ai.com/auth/realms/signal"],
+  "bearer_methods_supported": ["header"],
+  "scopes_supported": ["openid", "mcp:tools", "offline_access"]
+}

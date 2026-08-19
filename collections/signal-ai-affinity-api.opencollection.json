@@ -1,0 +1,53 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Signal AI Affinity API",
+    "version": "v1.3"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "https://api.signal-ai.com/auth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Affinity",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Explore concept connections (powered by the Signal AI Knowledge Graph)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.signal-ai.com/affinity",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "client_credentials",
+              "accessTokenUrl": "https://api.signal-ai.com/auth/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "This endpoint allows you to query the relationships from a source concept (entity or topic) to a set of target concepts (topics or entities) and how these relationships evolve over different months.\n\nThe `relationship.type` parameter allows you to specify the type of relationships you are interested in.\nCurrently, the only type of relationship supported is `proximity`\n\nThere are two ways to use this endpoint:\n\na. **Querying for specific concepts**: you need to provide as input a list of target-c"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

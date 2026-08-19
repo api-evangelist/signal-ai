@@ -1,0 +1,164 @@
+generated: '2026-08-13'
+method: derived
+source: openapi/_original/signal-ai-openapi-original.json + mcp/signal-ai-mcp.yml
+notes: >-
+  Binds each candidate Signal AI MCP tool to the OpenAPI operation that backs it,
+  so a tool inherits that operation's parameters and requestBody as its real
+  input schema. CONFIDENCE IS CAPPED AT MEDIUM THROUGHOUT: the live MCP server at
+  https://mcp.signal-ai.com is OAuth-gated (tools/list returns 401), so the tool
+  names on the left were derived from the OpenAPI, not read from the server. The
+  mapping direction is sound — every tool is a one-to-one wrapper of a single
+  published REST operation — but the tool identifiers themselves are unverified
+  and will need an authenticated tools/list to confirm.
+surfaces:
+  openapi:
+    path: openapi/_original/signal-ai-openapi-original.json
+    url: https://api.signal-ai.com/openapi.json
+    status: 200
+    gated: false
+  mcp:
+    url: https://mcp.signal-ai.com/mcp
+    status: 401
+    gated: true
+    gate: OAuth2 bearer (scope mcp:tools) via Keycloak realm `signal`
+  graphql:
+    present: false
+coverage:
+  openapi_operations: 20
+  mapped_operations: 17
+  tools: 17
+  mcp_only: 0
+  rest_only: 3
+  confidence_high: 0
+  confidence_medium: 17
+  confidence_low: 0
+crosswalk:
+- tool: search_documents
+  category: content-search
+  rest:
+  - search-documents
+  binding: 1:1
+  confidence: medium
+  note: POST /search. Input schema = the SearchRequest body (where/aggregations/size/from-cursor);
+    requires OAuth scope `search`.
+- tool: get_document
+  category: content-search
+  rest:
+  - get-document
+  binding: 1:1
+  confidence: medium
+  note: GET /documents/{id}. Input schema = single path param `id` (ResourceId/uuid).
+- tool: get_metrics
+  category: metrics
+  rest:
+  - get-metrics
+  binding: 1:1
+  confidence: medium
+  note: POST /metrics. Requires OAuth scope `metrics`.
+- tool: post_affinity
+  category: knowledge-graph
+  rest:
+  - post-affinity
+  binding: 1:1
+  confidence: medium
+  note: POST /affinity. Requires OAuth scope `affinity`; date window limited to the
+    last 15 months.
+- tool: search_events
+  category: events
+  rest:
+  - search-events
+  binding: 1:1
+  confidence: medium
+  note: POST /events. Requires OAuth scope `events`.
+- tool: get_event_by_hash
+  category: events
+  rest:
+  - get-event-by-hash
+  binding: 1:1
+  confidence: medium
+  note: GET /events/{hash}. Returns all story ids and source ids for the event, unlike
+    /events which caps at the top 100.
+- tool: risk_events_search
+  category: risk
+  rest:
+  - risk-events-search
+  binding: 1:1
+  confidence: medium
+  note: POST /risk-events-search. Requires OAuth scope `risk-events`.
+- tool: risk_events_scores
+  category: risk
+  rest:
+  - risk-events-scores
+  binding: 1:1
+  confidence: medium
+  note: POST /risk-events-scores. Requires OAuth scope `risk-events`.
+- tool: risk_events_definitions
+  category: risk
+  rest:
+  - risk-events-definitions
+  binding: 1:1
+  confidence: medium
+  note: GET /risk-events-definitions. Requires OAuth scope `risk-events`.
+- tool: find_entities
+  category: discovery
+  rest:
+  - find-entities
+  binding: 1:1
+  confidence: medium
+  note: GET /entities. Query params name/type/size/from-cursor; scope `default`.
+- tool: get_entity
+  category: discovery
+  rest:
+  - get-entity
+  binding: 1:1
+  confidence: medium
+- tool: find_topics
+  category: discovery
+  rest:
+  - find-topics
+  binding: 1:1
+  confidence: medium
+- tool: get_topic
+  category: discovery
+  rest:
+  - get-topic
+  binding: 1:1
+  confidence: medium
+- tool: find_sources
+  category: discovery
+  rest:
+  - find-sources
+  binding: 1:1
+  confidence: medium
+- tool: get_source
+  category: discovery
+  rest:
+  - get-source
+  binding: 1:1
+  confidence: medium
+- tool: get_source_locations
+  category: discovery
+  rest:
+  - get-source-locations
+  binding: 1:1
+  confidence: medium
+- tool: list_users
+  category: organisation
+  rest:
+  - list-users
+  binding: 1:1
+  confidence: medium
+  note: GET /users. New in the live spec since this repo last harvested it; requires
+    the `manage-organisation` scope, granted to organisation administrators.
+mcp_only: []
+rest_only:
+- operation: get-spec
+  path: GET /openapi.json
+  reason: Serves the OpenAPI document itself — a discovery route, not a data operation;
+    an MCP client would not model it as a tool.
+- operation: get-categories-iptc
+  path: GET /categories/iptc-media-topics
+  reason: Marked deprecated:true in the OpenAPI; excluded from the candidate tool set.
+- operation: get-category-iptc
+  path: GET /categories/iptc-media-topics/{id}
+  reason: Marked deprecated:true in the OpenAPI; excluded from the candidate tool set.

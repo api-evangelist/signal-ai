@@ -1,0 +1,40 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Signal AI Affinity Openapi.json API",
+    "version": "v1.3"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "https://api.signal-ai.com/auth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Openapi.json",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "OpenAPI specification",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.signal-ai.com/openapi.json"
+          },
+          "docs": "OpenAPI specification"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

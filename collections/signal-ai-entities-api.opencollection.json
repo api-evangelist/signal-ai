@@ -1,0 +1,82 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Signal AI Affinity Entities API",
+    "version": "v1.3"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "https://api.signal-ai.com/auth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Entities",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Search A.I. trained entities by type and name",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.signal-ai.com/entities",
+            "params": [
+              {
+                "name": "name",
+                "value": "",
+                "type": "query",
+                "description": "Any entity whose name contains this search term will match"
+              },
+              {
+                "name": "type",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "size",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "from-cursor",
+                "value": "",
+                "type": "query",
+                "description": "Use the `next-cursor` field from a previous response to get the next page of results (see [Pagination](#section/Pagination))"
+              }
+            ]
+          },
+          "docs": "Search A.I. trained entities by type and name"
+        },
+        {
+          "info": {
+            "name": "Get an entity by id",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.signal-ai.com/entities/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get an entity by id"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

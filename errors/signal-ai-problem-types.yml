@@ -1,0 +1,115 @@
+generated: '2026-08-13'
+method: searched
+source: https://api.signal-ai.com/docs
+source_detail: >-
+  The "Error responses" section of the Signal AI API reference, rendered from
+  info.description of https://api.signal-ai.com/openapi.json (fetched
+  2026-08-13, HTTP 200). Note that the OpenAPI document itself declares NO 4xx or
+  5xx responses on any of its 20 operations — every operation lists only a 200 —
+  so this catalog could not be derived from the machine-readable contract and was
+  read from the prose reference instead.
+format: proprietary
+media_type: application/json
+rfc9457: false
+envelope:
+  shape: >-
+    A top-level `errors` array of two-element tuples: [pointer, message]. The
+    pointer takes the form `#/{type}/path/to/error` where `{type}` is one of
+    `query-params`, `path-params` or `body`.
+  fields:
+  - name: errors
+    type: array
+    description: List of [pointer, message] tuples, one per validation failure.
+  example: |-
+    {
+      "errors": [
+        ["#/query-params/sizee", "Invalid parameter"],
+        ["#/path-params/id", "String does not match format \"uuid\""],
+        ["#/body/relationship/date/start", "must not be older than 15 months ago (2000-01)"]
+      ]
+    }
+  notes: >-
+    This is NOT RFC 9457 problem+json — there is no `type`, `title`, `status`,
+    `detail` or `instance`, no machine-readable error code, and no
+    `application/problem+json` media type. The pointer is a JSON-Pointer-like
+    string prefixed with the parameter class rather than a plain JSON Pointer, so
+    a generic RFC 6901 resolver will not resolve it against the request body.
+problem_types:
+- status: 400
+  title: Bad request
+  description: >-
+    The request is invalid — invalid parameters or invalid values. The response
+    contains a top-level `errors` array; each entry identifies the offending
+    element and describes the problem.
+  remediation: >-
+    Read each tuple pointer to locate the field. `#/query-params/...` points at a
+    URL/query-string parameter, `#/path-params/...` at a resource id in the path
+    (usually a malformed UUID), `#/body/...` at a field in a POST body. Fix and
+    retry — retrying unchanged will fail identically.
+  retryable: false
+- status: 401
+  title: Unauthorized
+  description: Incorrect credentials.
+  remediation: >-
+    Re-run the OAuth2 client-credentials grant against
+    https://api.signal-ai.com/auth/token and send the fresh `access_token` as
+    `Authorization: Bearer`. Tokens expire 24 hours (86400s) after issue, so a
+    long-lived client will see this on token expiry.
+  retryable: true
+  retry_after_reauth: true
+- status: 404
+  title: Not found
+  description: >-
+    Invalid endpoint or unknown resource. On GET requests (e.g.
+    `GET /entities/{id}`) the response body holds the invalid field.
+  remediation: >-
+    Confirm the path against the OpenAPI and confirm the resource id exists via
+    the matching discovery endpoint (`/entities`, `/topics`, `/sources`).
+  retryable: false
+- status: 429
+  title: Too many requests
+  description: >-
+    The server received too many requests in the last second or minute. Limits
+    are per-endpoint, per-Client ID.
+  remediation: >-
+    Back off and retry. See rate-limits/signal-ai-rate-limits.yml for the
+    published table. No `Retry-After` or `RateLimit-*` header is documented, so a
+    client must apply its own backoff — the first-party `signal-api-tools`
+    client classifies 429 as retryable and backs off.
+  retryable: true
+  ref: rate-limits/signal-ai-rate-limits.yml
+- status: 500
+  title: Internal server error
+  description: >-
+    The server encountered a problem while processing the request and failed
+    unexpectedly. Signal AI states these are actively monitored and automatically
+    reported to their team.
+  remediation: Retry with backoff; if persistent, contact support.
+  retryable: true
+- status: 502
+  title: Gateway error
+  description: The server returned an invalid response.
+  remediation: >-
+    "It is usually safe to retry the request after some time." Check
+    https://signalai.statuspage.io for a platform incident.
+  retryable: true
+- status: 503
+  title: Service unavailable
+  description: The server could not respond in time, e.g. under unexpected high load.
+  remediation: >-
+    "It is usually safe to retry the request after some time." Check
+    https://signalai.statuspage.io for a platform incident.
+  retryable: true
+- status: 504
+  title: Gateway timeout
+  description: The server could not respond in time.
+  remediation: >-
+    "It is usually safe to retry the request after some time." Check
+    https://signalai.statuspage.io for a platform incident.
+  retryable: true
+gaps:
+- No error codes: the API returns no stable machine-readable error identifier, only
+    an HTTP status and a human-readable message string, so client-side branching must
+    match on status plus fragile message text.
+- Not declared in the OpenAPI: none of the 20 operations declare a 4xx/5xx response,
+    so generated clients and mocks will not model any failure path.

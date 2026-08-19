@@ -1,0 +1,77 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Signal AI Affinity Topics API",
+    "version": "v1.3"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "https://api.signal-ai.com/auth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Topics",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get a topic by id",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.signal-ai.com/topics/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a topic by id"
+        },
+        {
+          "info": {
+            "name": "Search A.I. trained topics by name",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.signal-ai.com/topics",
+            "params": [
+              {
+                "name": "name",
+                "value": "",
+                "type": "query",
+                "description": "Any topic whose name contains this search term will match"
+              },
+              {
+                "name": "size",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "private",
+                "value": "",
+                "type": "query",
+                "description": "Only return topics which are private to your organisation"
+              }
+            ]
+          },
+          "docs": "Search A.I. trained topics by name"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

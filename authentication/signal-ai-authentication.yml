@@ -1,6 +1,11 @@
-generated: '2026-07-21'
-method: derived
-source: openapi/signal-ai-openapi-original.json
+generated: '2026-08-13'
+method: searched
+docs: https://api.signal-ai.com/docs
+source: https://api.signal-ai.com/openapi.json (live, fetched 2026-08-13, HTTP 200) + openapi/signal-ai-affinity-api-openapi.yml, openapi/signal-ai-categories-api-openapi.yml,
+  openapi/signal-ai-content-metrics-api-openapi.yml, openapi/signal-ai-content-search-api-openapi.yml,
+  openapi/signal-ai-entities-api-openapi.yml, openapi/signal-ai-events-api-openapi.yml, openapi/signal-ai-openapi-json-api-openapi.yml,
+  openapi/signal-ai-organisation-api-openapi.yml, openapi/signal-ai-publication-sources-api-openapi.yml,
+  openapi/signal-ai-risk-events-api-openapi.yml, openapi/signal-ai-topics-api-openapi.yml
 summary:
   types:
   - oauth2
@@ -19,4 +24,57 @@ schemes:
     ```\n\nThis will return the following JSON response:\n\n```json\n{\n    \"access_token\"\
     : \"eyJhbGciOi…\",\n    \"expires_in\": 86400,\n    …\n}\n```\n\nYou must "
   sources:
-  - openapi/signal-ai-openapi-original.json
+  - openapi/signal-ai-affinity-api-openapi.yml
+  - openapi/signal-ai-categories-api-openapi.yml
+  - openapi/signal-ai-content-metrics-api-openapi.yml
+  - openapi/signal-ai-content-search-api-openapi.yml
+  - openapi/signal-ai-entities-api-openapi.yml
+  - openapi/signal-ai-events-api-openapi.yml
+  - openapi/signal-ai-openapi-json-api-openapi.yml
+  - openapi/signal-ai-organisation-api-openapi.yml
+  - openapi/signal-ai-publication-sources-api-openapi.yml
+  - openapi/signal-ai-risk-events-api-openapi.yml
+  - openapi/signal-ai-topics-api-openapi.yml
+
+enrichment:
+  generated: '2026-08-13'
+  method: searched
+  docs: https://api.signal-ai.com/docs
+  summary: >-
+    One authentication style across the whole REST surface: OAuth2
+    client-credentials. There is no API key, no basic auth, no mTLS and no
+    user-facing authorization-code flow on the REST API. Credentials are a Client
+    ID / Client Secret pair issued by Signal AI to contracted customers, not
+    self-issued through a developer portal.
+  token:
+    endpoint: https://api.signal-ai.com/auth/token
+    grant_type: client_credentials
+    request: 'POST form-encoded: grant_type=client_credentials, client_id, client_secret'
+    response_fields: [access_token, expires_in]
+    ttl_seconds: 86400
+    usage: 'Authorization: Bearer <access_token>'
+    failure_status: 401
+  identity_provider:
+    product: Keycloak
+    issuer: https://login.signal-ai.com/auth/realms/signal
+    discovery: well-known/signal-ai-openid-configuration.json
+    grant_types_supported: [authorization_code, implicit, refresh_token, password, client_credentials,
+      'urn:ietf:params:oauth:grant-type:device_code', 'urn:openid:params:grant-type:ciba']
+  agent_surface:
+    endpoint: https://mcp.signal-ai.com/mcp
+    style: oauth2-bearer
+    challenge: RFC 6750 WWW-Authenticate with RFC 9728 resource_metadata pointer
+    scopes: [openid, 'mcp:tools', offline_access]
+    pkce: S256
+    note: >-
+      The MCP surface authenticates against the same Keycloak realm but through a
+      browser authorization-code + PKCE flow (observed on the 302 from
+      https://mcp.signal-ai.com/docs), not the REST client-credentials grant.
+  probes:
+  - url: https://api.signal-ai.com/topics
+    status: 401
+    note: 'Unauthenticated GET; response carries signal-version: 1 and no auth challenge
+      header.'
+  - url: https://mcp.signal-ai.com/mcp
+    status: 401
+    note: Unauthenticated tools/list; returns a correct Bearer challenge with resource_metadata.

@@ -1,16 +1,16 @@
-generated: '2026-07-21'
+generated: '2026-08-13'
 method: generated
-source: openapi/signal-ai-openapi-original.json
+source: openapi/_original/signal-ai-openapi-original.json
 skills:
 - file: signal-ai-content-search.md
   name: Signal AI content search and metrics
-  api: openapi/signal-ai-openapi-original.json
+  api: openapi/_original/signal-ai-openapi-original.json
   operations: [search-documents, get-document, get-metrics]
 - file: signal-ai-affinity.md
   name: Signal AI knowledge-graph affinity
-  api: openapi/signal-ai-openapi-original.json
+  api: openapi/_original/signal-ai-openapi-original.json
   operations: [find-entities, find-topics, post-affinity]
 - file: signal-ai-events.md
   name: Signal AI events and risk events
-  api: openapi/signal-ai-openapi-original.json
+  api: openapi/_original/signal-ai-openapi-original.json
   operations: [search-events, get-event-by-hash, risk-events-definitions, risk-events-search, risk-events-scores]

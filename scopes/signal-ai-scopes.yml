@@ -1,9 +1,354 @@
-generated: '2026-07-21'
-method: derived
-source: openapi/signal-ai-openapi-original.json
+generated: '2026-08-13'
+method: searched
+docs: https://api.signal-ai.com/docs
+source: https://api.signal-ai.com/openapi.json (live, fetched 2026-08-13, HTTP 200) + openapi/signal-ai-affinity-api-openapi.yml, openapi/signal-ai-categories-api-openapi.yml,
+  openapi/signal-ai-content-metrics-api-openapi.yml, openapi/signal-ai-content-search-api-openapi.yml,
+  openapi/signal-ai-entities-api-openapi.yml, openapi/signal-ai-events-api-openapi.yml, openapi/signal-ai-openapi-json-api-openapi.yml,
+  openapi/signal-ai-organisation-api-openapi.yml, openapi/signal-ai-publication-sources-api-openapi.yml,
+  openapi/signal-ai-risk-events-api-openapi.yml, openapi/signal-ai-topics-api-openapi.yml
 schemes:
 - name: OAuth2
-  source: openapi/signal-ai-openapi-original.json
+  source: openapi/signal-ai-affinity-api-openapi.yml
+  flows:
+  - flow: clientCredentials
+    tokenUrl: https://api.signal-ai.com/auth/token
+  description: |-
+    To obtain the Bearer Token using the Client ID / Secret pair provided to you:
+
+    ```bash
+    curl -X POST \
+      -d 'grant_type=client_credentials' \
+      -d 'client_id=YOUR_CLIENT_ID' \
+      -d 'client_secret=YOUR_CLIENT_SECRET' \
+      https://api.signal-ai.com/auth/token
+    ```
+
+    This will return the following JSON response:
+
+    ```json
+    {
+        "access_token": "eyJhbGciOi…",
+        "expires_in": 86400,
+        …
+    }
+    ```
+
+    You must send the `access_token` from this response in the Authorization header when making requests to other API endpoints:
+
+    ```bash
+    curl -H "Authorization: Bearer eyJhbGciOi…" \
+      https://api.signal-ai.com/…
+    ```
+
+    Access tokens will expire 24 hours from the time they were issued.
+- name: OAuth2
+  source: openapi/signal-ai-categories-api-openapi.yml
+  flows:
+  - flow: clientCredentials
+    tokenUrl: https://api.signal-ai.com/auth/token
+  description: |-
+    To obtain the Bearer Token using the Client ID / Secret pair provided to you:
+
+    ```bash
+    curl -X POST \
+      -d 'grant_type=client_credentials' \
+      -d 'client_id=YOUR_CLIENT_ID' \
+      -d 'client_secret=YOUR_CLIENT_SECRET' \
+      https://api.signal-ai.com/auth/token
+    ```
+
+    This will return the following JSON response:
+
+    ```json
+    {
+        "access_token": "eyJhbGciOi…",
+        "expires_in": 86400,
+        …
+    }
+    ```
+
+    You must send the `access_token` from this response in the Authorization header when making requests to other API endpoints:
+
+    ```bash
+    curl -H "Authorization: Bearer eyJhbGciOi…" \
+      https://api.signal-ai.com/…
+    ```
+
+    Access tokens will expire 24 hours from the time they were issued.
+- name: OAuth2
+  source: openapi/signal-ai-content-metrics-api-openapi.yml
+  flows:
+  - flow: clientCredentials
+    tokenUrl: https://api.signal-ai.com/auth/token
+  description: |-
+    To obtain the Bearer Token using the Client ID / Secret pair provided to you:
+
+    ```bash
+    curl -X POST \
+      -d 'grant_type=client_credentials' \
+      -d 'client_id=YOUR_CLIENT_ID' \
+      -d 'client_secret=YOUR_CLIENT_SECRET' \
+      https://api.signal-ai.com/auth/token
+    ```
+
+    This will return the following JSON response:
+
+    ```json
+    {
+        "access_token": "eyJhbGciOi…",
+        "expires_in": 86400,
+        …
+    }
+    ```
+
+    You must send the `access_token` from this response in the Authorization header when making requests to other API endpoints:
+
+    ```bash
+    curl -H "Authorization: Bearer eyJhbGciOi…" \
+      https://api.signal-ai.com/…
+    ```
+
+    Access tokens will expire 24 hours from the time they were issued.
+- name: OAuth2
+  source: openapi/signal-ai-content-search-api-openapi.yml
+  flows:
+  - flow: clientCredentials
+    tokenUrl: https://api.signal-ai.com/auth/token
+  description: |-
+    To obtain the Bearer Token using the Client ID / Secret pair provided to you:
+
+    ```bash
+    curl -X POST \
+      -d 'grant_type=client_credentials' \
+      -d 'client_id=YOUR_CLIENT_ID' \
+      -d 'client_secret=YOUR_CLIENT_SECRET' \
+      https://api.signal-ai.com/auth/token
+    ```
+
+    This will return the following JSON response:
+
+    ```json
+    {
+        "access_token": "eyJhbGciOi…",
+        "expires_in": 86400,
+        …
+    }
+    ```
+
+    You must send the `access_token` from this response in the Authorization header when making requests to other API endpoints:
+
+    ```bash
+    curl -H "Authorization: Bearer eyJhbGciOi…" \
+      https://api.signal-ai.com/…
+    ```
+
+    Access tokens will expire 24 hours from the time they were issued.
+- name: OAuth2
+  source: openapi/signal-ai-entities-api-openapi.yml
+  flows:
+  - flow: clientCredentials
+    tokenUrl: https://api.signal-ai.com/auth/token
+  description: |-
+    To obtain the Bearer Token using the Client ID / Secret pair provided to you:
+
+    ```bash
+    curl -X POST \
+      -d 'grant_type=client_credentials' \
+      -d 'client_id=YOUR_CLIENT_ID' \
+      -d 'client_secret=YOUR_CLIENT_SECRET' \
+      https://api.signal-ai.com/auth/token
+    ```
+
+    This will return the following JSON response:
+
+    ```json
+    {
+        "access_token": "eyJhbGciOi…",
+        "expires_in": 86400,
+        …
+    }
+    ```
+
+    You must send the `access_token` from this response in the Authorization header when making requests to other API endpoints:
+
+    ```bash
+    curl -H "Authorization: Bearer eyJhbGciOi…" \
+      https://api.signal-ai.com/…
+    ```
+
+    Access tokens will expire 24 hours from the time they were issued.
+- name: OAuth2
+  source: openapi/signal-ai-events-api-openapi.yml
+  flows:
+  - flow: clientCredentials
+    tokenUrl: https://api.signal-ai.com/auth/token
+  description: |-
+    To obtain the Bearer Token using the Client ID / Secret pair provided to you:
+
+    ```bash
+    curl -X POST \
+      -d 'grant_type=client_credentials' \
+      -d 'client_id=YOUR_CLIENT_ID' \
+      -d 'client_secret=YOUR_CLIENT_SECRET' \
+      https://api.signal-ai.com/auth/token
+    ```
+
+    This will return the following JSON response:
+
+    ```json
+    {
+        "access_token": "eyJhbGciOi…",
+        "expires_in": 86400,
+        …
+    }
+    ```
+
+    You must send the `access_token` from this response in the Authorization header when making requests to other API endpoints:
+
+    ```bash
+    curl -H "Authorization: Bearer eyJhbGciOi…" \
+      https://api.signal-ai.com/…
+    ```
+
+    Access tokens will expire 24 hours from the time they were issued.
+- name: OAuth2
+  source: openapi/signal-ai-openapi-json-api-openapi.yml
+  flows:
+  - flow: clientCredentials
+    tokenUrl: https://api.signal-ai.com/auth/token
+  description: |-
+    To obtain the Bearer Token using the Client ID / Secret pair provided to you:
+
+    ```bash
+    curl -X POST \
+      -d 'grant_type=client_credentials' \
+      -d 'client_id=YOUR_CLIENT_ID' \
+      -d 'client_secret=YOUR_CLIENT_SECRET' \
+      https://api.signal-ai.com/auth/token
+    ```
+
+    This will return the following JSON response:
+
+    ```json
+    {
+        "access_token": "eyJhbGciOi…",
+        "expires_in": 86400,
+        …
+    }
+    ```
+
+    You must send the `access_token` from this response in the Authorization header when making requests to other API endpoints:
+
+    ```bash
+    curl -H "Authorization: Bearer eyJhbGciOi…" \
+      https://api.signal-ai.com/…
+    ```
+
+    Access tokens will expire 24 hours from the time they were issued.
+- name: OAuth2
+  source: openapi/signal-ai-organisation-api-openapi.yml
+  flows:
+  - flow: clientCredentials
+    tokenUrl: https://api.signal-ai.com/auth/token
+  description: |-
+    To obtain the Bearer Token using the Client ID / Secret pair provided to you:
+
+    ```bash
+    curl -X POST \
+      -d 'grant_type=client_credentials' \
+      -d 'client_id=YOUR_CLIENT_ID' \
+      -d 'client_secret=YOUR_CLIENT_SECRET' \
+      https://api.signal-ai.com/auth/token
+    ```
+
+    This will return the following JSON response:
+
+    ```json
+    {
+        "access_token": "eyJhbGciOi…",
+        "expires_in": 86400,
+        …
+    }
+    ```
+
+    You must send the `access_token` from this response in the Authorization header when making requests to other API endpoints:
+
+    ```bash
+    curl -H "Authorization: Bearer eyJhbGciOi…" \
+      https://api.signal-ai.com/…
+    ```
+
+    Access tokens will expire 24 hours from the time they were issued.
+- name: OAuth2
+  source: openapi/signal-ai-publication-sources-api-openapi.yml
+  flows:
+  - flow: clientCredentials
+    tokenUrl: https://api.signal-ai.com/auth/token
+  description: |-
+    To obtain the Bearer Token using the Client ID / Secret pair provided to you:
+
+    ```bash
+    curl -X POST \
+      -d 'grant_type=client_credentials' \
+      -d 'client_id=YOUR_CLIENT_ID' \
+      -d 'client_secret=YOUR_CLIENT_SECRET' \
+      https://api.signal-ai.com/auth/token
+    ```
+
+    This will return the following JSON response:
+
+    ```json
+    {
+        "access_token": "eyJhbGciOi…",
+        "expires_in": 86400,
+        …
+    }
+    ```
+
+    You must send the `access_token` from this response in the Authorization header when making requests to other API endpoints:
+
+    ```bash
+    curl -H "Authorization: Bearer eyJhbGciOi…" \
+      https://api.signal-ai.com/…
+    ```
+
+    Access tokens will expire 24 hours from the time they were issued.
+- name: OAuth2
+  source: openapi/signal-ai-risk-events-api-openapi.yml
+  flows:
+  - flow: clientCredentials
+    tokenUrl: https://api.signal-ai.com/auth/token
+  description: |-
+    To obtain the Bearer Token using the Client ID / Secret pair provided to you:
+
+    ```bash
+    curl -X POST \
+      -d 'grant_type=client_credentials' \
+      -d 'client_id=YOUR_CLIENT_ID' \
+      -d 'client_secret=YOUR_CLIENT_SECRET' \
+      https://api.signal-ai.com/auth/token
+    ```
+
+    This will return the following JSON response:
+
+    ```json
+    {
+        "access_token": "eyJhbGciOi…",
+        "expires_in": 86400,
+        …
+    }
+    ```
+
+    You must send the `access_token` from this response in the Authorization header when making requests to other API endpoints:
+
+    ```bash
+    curl -H "Authorization: Bearer eyJhbGciOi…" \
+      https://api.signal-ai.com/…
+    ```
+
+    Access tokens will expire 24 hours from the time they were issued.
+- name: OAuth2
+  source: openapi/signal-ai-topics-api-openapi.yml
   flows:
   - flow: clientCredentials
     tokenUrl: https://api.signal-ai.com/auth/token
@@ -42,34 +387,132 @@ scopes:
   flows:
   - clientCredentials
   sources:
-  - openapi/signal-ai-openapi-original.json
+  - openapi/signal-ai-affinity-api-openapi.yml
+  - openapi/signal-ai-categories-api-openapi.yml
+  - openapi/signal-ai-content-metrics-api-openapi.yml
+  - openapi/signal-ai-content-search-api-openapi.yml
+  - openapi/signal-ai-entities-api-openapi.yml
+  - openapi/signal-ai-events-api-openapi.yml
+  - openapi/signal-ai-openapi-json-api-openapi.yml
+  - openapi/signal-ai-organisation-api-openapi.yml
+  - openapi/signal-ai-publication-sources-api-openapi.yml
+  - openapi/signal-ai-risk-events-api-openapi.yml
+  - openapi/signal-ai-topics-api-openapi.yml
 - scope: default
   description: Access to discovery endpoints
   flows:
   - clientCredentials
   sources:
-  - openapi/signal-ai-openapi-original.json
+  - openapi/signal-ai-affinity-api-openapi.yml
+  - openapi/signal-ai-categories-api-openapi.yml
+  - openapi/signal-ai-content-metrics-api-openapi.yml
+  - openapi/signal-ai-content-search-api-openapi.yml
+  - openapi/signal-ai-entities-api-openapi.yml
+  - openapi/signal-ai-events-api-openapi.yml
+  - openapi/signal-ai-openapi-json-api-openapi.yml
+  - openapi/signal-ai-organisation-api-openapi.yml
+  - openapi/signal-ai-publication-sources-api-openapi.yml
+  - openapi/signal-ai-risk-events-api-openapi.yml
+  - openapi/signal-ai-topics-api-openapi.yml
 - scope: events
   description: Access to events endpoint
   flows:
   - clientCredentials
   sources:
-  - openapi/signal-ai-openapi-original.json
+  - openapi/signal-ai-affinity-api-openapi.yml
+  - openapi/signal-ai-categories-api-openapi.yml
+  - openapi/signal-ai-content-metrics-api-openapi.yml
+  - openapi/signal-ai-content-search-api-openapi.yml
+  - openapi/signal-ai-entities-api-openapi.yml
+  - openapi/signal-ai-events-api-openapi.yml
+  - openapi/signal-ai-openapi-json-api-openapi.yml
+  - openapi/signal-ai-organisation-api-openapi.yml
+  - openapi/signal-ai-publication-sources-api-openapi.yml
+  - openapi/signal-ai-risk-events-api-openapi.yml
+  - openapi/signal-ai-topics-api-openapi.yml
+- scope: manage-organisation
+  description: Access to organisation administration endpoints
+  flows:
+  - clientCredentials
+  sources:
+  - openapi/signal-ai-organisation-api-openapi.yml
 - scope: metrics
   description: Access to content metrics endpoint
   flows:
   - clientCredentials
   sources:
-  - openapi/signal-ai-openapi-original.json
+  - openapi/signal-ai-affinity-api-openapi.yml
+  - openapi/signal-ai-categories-api-openapi.yml
+  - openapi/signal-ai-content-metrics-api-openapi.yml
+  - openapi/signal-ai-content-search-api-openapi.yml
+  - openapi/signal-ai-entities-api-openapi.yml
+  - openapi/signal-ai-events-api-openapi.yml
+  - openapi/signal-ai-openapi-json-api-openapi.yml
+  - openapi/signal-ai-organisation-api-openapi.yml
+  - openapi/signal-ai-publication-sources-api-openapi.yml
+  - openapi/signal-ai-risk-events-api-openapi.yml
+  - openapi/signal-ai-topics-api-openapi.yml
 - scope: risk-events
   description: Access to risk events
   flows:
   - clientCredentials
   sources:
-  - openapi/signal-ai-openapi-original.json
+  - openapi/signal-ai-affinity-api-openapi.yml
+  - openapi/signal-ai-categories-api-openapi.yml
+  - openapi/signal-ai-content-metrics-api-openapi.yml
+  - openapi/signal-ai-content-search-api-openapi.yml
+  - openapi/signal-ai-entities-api-openapi.yml
+  - openapi/signal-ai-events-api-openapi.yml
+  - openapi/signal-ai-openapi-json-api-openapi.yml
+  - openapi/signal-ai-organisation-api-openapi.yml
+  - openapi/signal-ai-publication-sources-api-openapi.yml
+  - openapi/signal-ai-risk-events-api-openapi.yml
+  - openapi/signal-ai-topics-api-openapi.yml
 - scope: search
   description: Access to content search endpoint
   flows:
   - clientCredentials
   sources:
-  - openapi/signal-ai-openapi-original.json
+  - openapi/signal-ai-affinity-api-openapi.yml
+  - openapi/signal-ai-categories-api-openapi.yml
+  - openapi/signal-ai-content-metrics-api-openapi.yml
+  - openapi/signal-ai-content-search-api-openapi.yml
+  - openapi/signal-ai-entities-api-openapi.yml
+  - openapi/signal-ai-events-api-openapi.yml
+  - openapi/signal-ai-openapi-json-api-openapi.yml
+  - openapi/signal-ai-organisation-api-openapi.yml
+  - openapi/signal-ai-publication-sources-api-openapi.yml
+  - openapi/signal-ai-risk-events-api-openapi.yml
+  - openapi/signal-ai-topics-api-openapi.yml
+
+enrichment:
+  generated: '2026-08-13'
+  method: searched
+  docs: https://api.signal-ai.com/docs
+  notes: >-
+    Signal AI publishes no standalone scopes or permissions reference page. The
+    authoritative list is the OpenAPI securityScheme itself, which the API serves
+    unauthenticated at https://api.signal-ai.com/openapi.json; the reference at
+    https://api.signal-ai.com/docs renders those same six API scopes inline via a
+    ReDoc security-definitions injection. `manage-organisation` is NEW in the live
+    spec since this repository last harvested it and is described as "granted to
+    organisation administrators".
+  scope_count: 7
+  additional_scopes:
+  - scope: openid
+    description: Standard OIDC scope on the Keycloak realm `signal`.
+    issuer: https://login.signal-ai.com/auth/realms/signal
+    surface: mcp
+    source: https://mcp.signal-ai.com/.well-known/oauth-protected-resource
+  - scope: mcp:tools
+    description: >-
+      Grants access to the tools exposed by Signal AI's hosted MCP server at
+      https://mcp.signal-ai.com. Declared in scopes_supported of the RFC 9728
+      protected-resource metadata; not present in the REST OpenAPI.
+    surface: mcp
+    source: https://mcp.signal-ai.com/.well-known/oauth-protected-resource
+  - scope: offline_access
+    description: Standard OIDC refresh-token scope advertised on the MCP resource.
+    surface: mcp
+    source: https://mcp.signal-ai.com/.well-known/oauth-protected-resource
+  authorization_server: https://login.signal-ai.com/auth/realms/signal

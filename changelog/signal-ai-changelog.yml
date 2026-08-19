@@ -1,0 +1,78 @@
+generated: '2026-08-13'
+method: searched
+source: https://api.signal-ai.com/docs
+source_detail: >-
+  The "Changelog" section of the Signal AI API reference, rendered from
+  info.description of https://api.signal-ai.com/openapi.json (fetched
+  2026-08-13, HTTP 200). Signal AI publishes no separate changelog page,
+  release-notes feed or GitHub releases for the API.
+scheme: marketing-versioned
+current_version: v1.4
+declared_spec_version: v1.3
+notes: >-
+  The changelog's newest entry is v1.4 but the OpenAPI document's `info.version`
+  still reads `v1.3` — the two disagree, so a consumer reading the machine
+  contract is told an older version than the prose. Versions are documentation
+  labels only: the API is served from an unversioned host with no version prefix
+  in any path and no version request header, and responses carry a
+  `signal-version: 1` header (observed 2026-08-13) that does not track these
+  point releases. Dates below are recorded as published, in DD/MM/YYYY.
+entry_count: 4
+last_entry_date: '2023-04-04'
+staleness_note: >-
+  The published changelog stops at 2023-04-04, yet the live spec has moved since
+  this repository last harvested it: a new `Organisation` tag, `GET /users`
+  (operationId `list-users`) and a new `manage-organisation` OAuth scope are now
+  in https://api.signal-ai.com/openapi.json and appear in NO changelog entry.
+  The changelog therefore understates the current surface — an undocumented
+  addition rather than an abandoned API.
+entries:
+- version: v1.4
+  date: '2023-04-04'
+  published_as: 04/04/2023
+  breaking: false
+  headline: Events GA
+  additions:
+  - Added support for pagination on Events
+  - Added the `/events/{hash}` endpoint
+- version: v1.3
+  date: '2022-07-28'
+  published_as: 28/07/2022
+  breaking: false
+  headline: New Events capability
+  additions:
+  - Added the new `events` endpoint for monitoring major news events
+  - Enabled story-level metrics in the `metrics` endpoint to support volume and sentiment
+    analysis of events
+- version: v1.2
+  date: '2022-06-08'
+  published_as: 08/06/2022
+  breaking: false
+  headline: Improved Search capability
+  additions:
+  - Added support for `story-id` as a search query criterion
+  - Added support for `source.region` and `source.subregion` as search query criteria
+- version: v1.1
+  date: '2022-02-17'
+  published_as: 17/02/2022
+  breaking: true
+  headline: Improved Affinity capability
+  additions:
+  - Added the new `POST /affinity` endpoint for querying relationships between concepts
+  - Improved the `proximity-score` and `sentiment-score` models for better explainability
+    and precision
+  deprecations:
+  - GET /affinity/entities
+  - GET /affinity/topics
+  breaking_note: >-
+    Deprecated `GET /affinity/entities` and `GET /affinity/topics` in favour of
+    `POST /affinity`. Both deprecated paths are absent from the current OpenAPI,
+    so they have since been removed outright; no Sunset/Deprecation header
+    programme accompanied the removal.
+unlogged_changes:
+- change: Added `GET /users` (operationId `list-users`) under a new `Organisation` tag
+  evidence: https://api.signal-ai.com/openapi.json fetched 2026-08-13 (HTTP 200)
+  logged: false
+- change: Added the `manage-organisation` OAuth2 client-credentials scope
+  evidence: components.securitySchemes.OAuth2.flows.clientCredentials.scopes
+  logged: false

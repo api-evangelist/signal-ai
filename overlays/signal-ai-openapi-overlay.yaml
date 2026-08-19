@@ -2,7 +2,7 @@ overlay: 1.0.0
 info:
   title: API Evangelist enhancements for Signal AI API
   version: 1.0.0
-extends: openapi/signal-ai-openapi-original.json
+extends: openapi/_original/signal-ai-openapi-original.json
 actions:
 - target: $.info
   update:
@@ -28,3 +28,15 @@ actions:
       data_model: data-model/signal-ai-data-model.yml
       lifecycle: lifecycle/signal-ai-lifecycle.yml
       conformance: conformance/signal-ai-conformance.yml
+      changelog: changelog/signal-ai-changelog.yml
+      errors: errors/signal-ai-problem-types.yml
+      rate_limits: rate-limits/signal-ai-rate-limits.yml
+      plans: plans/signal-ai-plans-pricing.yml
+      packages: packages/signal-ai-packages.yml
+      mcp: mcp/signal-ai-mcp.yml
+      tool_crosswalk: mcp/signal-ai-tool-crosswalk.yml
+      well_known: well-known/signal-ai-well-known.yml
+    x-apievangelist-rate-limit-headers: none-published
+    x-apievangelist-error-format: proprietary-errors-array
+    x-apievangelist-idempotency: not-supported
+    x-apievangelist-generated: '2026-08-13'

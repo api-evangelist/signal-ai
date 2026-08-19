@@ -1,39 +1,100 @@
-generated: '2026-07-21'
-method: derived
-source: openapi/signal-ai-openapi-original.json
+generated: '2026-08-13'
+method: searched
+source: https://api.signal-ai.com/docs
+source_detail: >-
+  Upgraded from derived to searched by reading the Signal AI API reference
+  (rendered from info.description of https://api.signal-ai.com/openapi.json,
+  fetched 2026-08-13, HTTP 200), which documents Authorization, Pagination, Rate
+  Limiting, Error responses and Dates & Time Zones in prose, plus a live
+  unauthenticated response header probe of GET https://api.signal-ai.com/topics.
 authentication:
   style: oauth2-bearer
   flow: client_credentials
   token_endpoint: https://api.signal-ai.com/auth/token
   header: 'Authorization: Bearer <access_token>'
   token_ttl_seconds: 86400
-  scopes: [default, search, metrics, affinity, events, risk-events]
+  credential_issuance: Client ID / Client Secret pair "provided to you" by Signal AI
+    — not self-serve.
+  scopes: [default, search, metrics, affinity, events, risk-events, manage-organisation]
   ref: authentication/signal-ai-authentication.yml
 idempotency:
   supported: false
-  notes: No documented Idempotency-Key header or idempotent-write contract in the OpenAPI.
+  header: null
+  notes: >-
+    No Idempotency-Key header and no idempotent-write contract anywhere in the
+    OpenAPI or the reference. Note that every POST on this API (`/search`,
+    `/metrics`, `/affinity`, `/events`, `/risk-events-search`,
+    `/risk-events-scores`) is a READ expressed as POST-with-a-body — there are no
+    state-changing writes in the public surface, so idempotency keys would have
+    nothing to protect. A safe retry is safe by construction here, not by policy.
 pagination:
   style: cursor
   request_params:
   - from-cursor
   - size
+  request_location: query string for GET, request body for POST
   response_fields:
   - next-cursor
+  termination: Absence of `next-cursor` in the response means all matching results have
+    been consumed.
+  applies_to:
+  - POST /search
+  - GET /entities
+  - GET /topics
+  - GET /sources
+  - POST /events
   notes: >-
-    Search-style responses (documents, events, risk events) return a base64 next-cursor;
-    pass it back as from-cursor to page forward. `size` controls page size.
+    Documented in the reference's Pagination section. The first-party
+    signal-api-tools Python client implements exactly this loop in its
+    `Paginate` iterator.
+field_expansion:
+  supported: false
+  notes: No sparse-fieldset or expand parameter documented.
 metadata:
   request_id_header: null
-  notes: No request-id / correlation header documented.
+  response_version_header: signal-version
+  notes: >-
+    No request-id / correlation header is documented or observed. Responses do
+    carry `signal-version: 1` (observed 2026-08-13 on a 401 from
+    GET https://api.signal-ai.com/topics), a coarse platform-generation marker
+    that does not track the v1.1–v1.4 changelog releases.
+dates:
+  timezone: UTC
+  format: ISO 8601 with "Z" for UTC+0
+  notes: Publication dates are UTC. Affinity and other historical queries are capped
+    to the last 15 months of data.
 versioning:
   style: unversioned-host
+  notes: >-
+    No version prefix in any path, no version request header. Documentation
+    versions (v1.1–v1.4) are changelog labels only; info.version currently reads
+    v1.3 while the changelog's newest entry is v1.4.
   ref: lifecycle/signal-ai-lifecycle.yml
+  changelog_ref: changelog/signal-ai-changelog.yml
 error_envelope:
   media_type: application/json
-  format: non-rfc9457
-  notes: Error responses are JSON but not documented as application/problem+json.
+  format: proprietary
+  rfc9457: false
+  shape: '{"errors": [[pointer, message], ...]} where pointer is `#/{query-params|path-params|body}/path/to/field`'
+  error_codes: false
+  notes: >-
+    Not application/problem+json and no stable machine-readable error code — a
+    client must branch on HTTP status plus free-text message. The OpenAPI
+    declares no 4xx/5xx responses on any operation, so generated clients model no
+    failure path at all.
+  ref: errors/signal-ai-problem-types.yml
 rate_limiting:
-  signaled: unknown
-  notes: No rate-limit response headers documented in the spec.
+  signaled: false
+  documented: true
+  scope: per-endpoint, per-Client ID
+  windows: [second, minute]
+  exhaustion_status: 429
+  response_headers: []
+  notes: >-
+    Limits are published as a table in the reference but NOT signalled at
+    runtime: no X-RateLimit-*, no RFC 9331 RateLimit-*, no Retry-After. A client
+    must track its own spend against the documented numbers or discover the wall
+    by receiving a 429.
+  ref: rate-limits/signal-ai-rate-limits.yml
 data_model:
   ref: data-model/signal-ai-data-model.yml

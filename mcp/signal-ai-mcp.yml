@@ -1,68 +1,118 @@
-generated: '2026-07-21'
-method: searched
+generated: '2026-08-13'
+method: probed
 status: published
-source: https://mcp.signal-ai.com
+source: https://mcp.signal-ai.com/.well-known/oauth-protected-resource
 notes: >-
-  A hosted MCP server is live at https://mcp.signal-ai.com. An unauthenticated
-  probe returns HTTP 401 (auth required), and the Signal AI Keycloak realm
-  advertises an `mcp:tools` OAuth scope, confirming an official, OAuth-gated MCP
-  surface. The concrete tool list is not publicly enumerable without credentials,
-  so the tools[] below are DERIVED candidates mapped from the public OpenAPI
-  operations and may not match the server's exact tool names.
+  Signal AI runs an official hosted, remote MCP server at
+  https://mcp.signal-ai.com. This round upgraded the evidence from "401 wall" to
+  spec-level confirmation: an unauthenticated
+  POST https://mcp.signal-ai.com/mcp with a `tools/list` JSON-RPC body returns
+  HTTP 401 carrying a correct RFC 9728 challenge —
+  `WWW-Authenticate: Bearer resource_metadata="https://mcp.signal-ai.com/.well-known/oauth-protected-resource"` —
+  and that metadata document resolves anonymously (HTTP 200), declaring the
+  resource, its authorization server and an `mcp:tools` scope. The server is
+  therefore a real, correctly-advertised, OAuth-gated remote MCP endpoint. The
+  concrete tool list is NOT publicly enumerable: `tools/list` requires a bearer
+  token, so the tools[] below remain DERIVED candidates mapped from the public
+  OpenAPI operations and may not match the server's actual tool names or input
+  schemas. Confirming them requires authenticated introspection with Signal AI
+  credentials.
 server:
   name: signal-ai
   transport: http
   url: https://mcp.signal-ai.com
+  endpoints:
+    mcp: https://mcp.signal-ai.com/mcp
+    sse: https://mcp.signal-ai.com/sse
   auth: oauth2
   auth_evidence:
-  - unauthenticated GET https://mcp.signal-ai.com -> 401
-  - Keycloak realm scope `mcp:tools` in well-known/signal-ai-openid-configuration.json
+  - POST https://mcp.signal-ai.com/mcp {"jsonrpc":"2.0","id":1,"method":"tools/list"}
+    -> 401 {"error":"Jwt is missing"} (probed 2026-08-13)
+  - 'WWW-Authenticate: Bearer realm="https://mcp.signal-ai.com/mcp"'
+  - 'WWW-Authenticate: Bearer resource_metadata="https://mcp.signal-ai.com/.well-known/oauth-protected-resource"'
+  - GET https://mcp.signal-ai.com/.well-known/oauth-protected-resource -> 200 (RFC
+    9728)
+  - GET https://mcp.signal-ai.com/.well-known/oauth-authorization-server -> 200 (RFC
+    8414)
+  authorization_server: https://login.signal-ai.com/auth/realms/signal
+  scopes_supported:
+  - openid
+  - mcp:tools
+  - offline_access
+  bearer_methods_supported:
+  - header
+  docs:
+    url: https://mcp.signal-ai.com/docs
+    status: 302
+    note: Redirects to the Keycloak authorization endpoint — the MCP server's own
+      documentation is behind login, so no public tool reference exists.
+tools_status: derived-candidates
+tools_evidence: >-
+  tools/list is auth-gated (401). Names below are derived from OpenAPI
+  operationIds in openapi/_original/signal-ai-openapi-original.json, not read
+  from the server.
 tools:
 - name: search_documents
   description: AI-powered content search over Signal AI's billion+ document corpus
-  source_operation: openapi/signal-ai-openapi-original.json#search-documents
+  source_operation: search-documents
 - name: get_document
   description: Retrieve a single document by id
-  source_operation: openapi/signal-ai-openapi-original.json#get-document
+  source_operation: get-document
 - name: get_metrics
   description: Coverage and sentiment metrics aggregations for a query
-  source_operation: openapi/signal-ai-openapi-original.json#get-metrics
+  source_operation: get-metrics
 - name: post_affinity
   description: Query the Signal AI Knowledge Graph for concept affinity
-  source_operation: openapi/signal-ai-openapi-original.json#post-affinity
+  source_operation: post-affinity
 - name: search_events
   description: Find significant clusters of news coverage (events)
-  source_operation: openapi/signal-ai-openapi-original.json#search-events
+  source_operation: search-events
 - name: get_event_by_hash
   description: Retrieve a single event by hash
-  source_operation: openapi/signal-ai-openapi-original.json#get-event-by-hash
+  source_operation: get-event-by-hash
 - name: risk_events_search
   description: Search risk events
-  source_operation: openapi/signal-ai-openapi-original.json#risk-events-search
+  source_operation: risk-events-search
 - name: risk_events_scores
   description: Retrieve risk event scores
-  source_operation: openapi/signal-ai-openapi-original.json#risk-events-scores
+  source_operation: risk-events-scores
 - name: risk_events_definitions
   description: List risk event definitions
-  source_operation: openapi/signal-ai-openapi-original.json#risk-events-definitions
+  source_operation: risk-events-definitions
 - name: find_entities
   description: Look up entities in the knowledge graph
-  source_operation: openapi/signal-ai-openapi-original.json#find-entities
+  source_operation: find-entities
 - name: get_entity
   description: Retrieve a single entity by id
-  source_operation: openapi/signal-ai-openapi-original.json#get-entity
+  source_operation: get-entity
 - name: find_topics
   description: Look up topics
-  source_operation: openapi/signal-ai-openapi-original.json#find-topics
+  source_operation: find-topics
 - name: get_topic
   description: Retrieve a single topic by id
-  source_operation: openapi/signal-ai-openapi-original.json#get-topic
+  source_operation: get-topic
 - name: find_sources
   description: Look up publication sources
-  source_operation: openapi/signal-ai-openapi-original.json#find-sources
+  source_operation: find-sources
 - name: get_source
   description: Retrieve a single publication source by id
-  source_operation: openapi/signal-ai-openapi-original.json#get-source
+  source_operation: get-source
 - name: get_source_locations
   description: List available publication source locations
-  source_operation: openapi/signal-ai-openapi-original.json#get-source-locations
+  source_operation: get-source-locations
+- name: list_users
+  description: List users in the authenticated credential's organisation
+  source_operation: list-users
+deployment:
+  mode: remote
+  endpoint: https://mcp.signal-ai.com/mcp
+  auth: oauth
+  verified: probed
+  probe: rfc9728-challenge
+  checked: '2026-08-13'
+  source: POST /mcp -> 401 + WWW-Authenticate resource_metadata; metadata document 200
+  note: >-
+    Remote only. Signal AI ships no stdio package — there is no npx/pip install
+    for a Signal AI MCP server on any registry, so this is an endpoint an agent
+    can reach today given credentials, not a local server a human must install.
+crosswalk: mcp/signal-ai-tool-crosswalk.yml

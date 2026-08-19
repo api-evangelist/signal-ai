@@ -1,0 +1,100 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Signal AI Affinity Publication sources API",
+    "version": "v1.3"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "https://api.signal-ai.com/auth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Publication sources",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List available countries of publication",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.signal-ai.com/source-locations"
+          },
+          "docs": "List available countries of publication"
+        },
+        {
+          "info": {
+            "name": "Search publication sources",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.signal-ai.com/sources",
+            "params": [
+              {
+                "name": "name",
+                "value": "",
+                "type": "query",
+                "description": "Any publication whose name contains this search term will match"
+              },
+              {
+                "name": "size",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "country",
+                "value": "",
+                "type": "query",
+                "description": "Country name"
+              },
+              {
+                "name": "region",
+                "value": "",
+                "type": "query",
+                "description": "Region name"
+              },
+              {
+                "name": "subregion",
+                "value": "",
+                "type": "query",
+                "description": "Subregion name"
+              }
+            ]
+          },
+          "docs": "See [List available countries of publication](#tag/Publication-sources/operation/get-source-locations) to find possible values for `country`, `region` and `subregion`."
+        },
+        {
+          "info": {
+            "name": "Get a publication source by id",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.signal-ai.com/sources/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a publication source by id"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,413 @@
+openapi: 3.1.0
+info:
+  title: Signal AI Organisation API
+  description: |
+    # Overview
+
+    The Signal AI API is an HTTP+JSON API offering programmatic access to Signal AI's decision augmentation platform.
+    Signal AI has the world's largest dataset of real-time, global news and regulatory information. Our proprietary AIQ framework understands, enriches and surfaces relevant news and regulatory data in real-time, and at scale.
+
+    Our API offers three powerful capabilities:
+
+    1. **Content Search**: Create hyper-relevant content feeds using Signal's AI-powered search
+    1. **Content Metrics**: Get coverage & sentiment metrics at a glance to power Business Intelligence & data visualisation solutions
+    1. **Affinity**: Uncover unknowns through the Signal AI Knowledge Graph
+    1. **Events**: Identify significant clusters of news coverage about entities and topics of interest
+
+    To be able to interact with the Signal AI API endpoints and get the most value out of them, it is useful to understand the metadata concepts that our AI enriches content with.
+
+    # Concepts
+
+    ## Topics
+
+    Signal AI experts have trained over 300 topics (or themes), from Health to Blockchain to provide clients an easy way to track emerging trends relevant to their businesses.
+    Clients can also train their own topics with help from our experts for use in our API.
+    The API provides the ability to query for documents pertaining to one or many topics. Examples of topics include: `Renewable Energy`, `Autonomous Vehicles`, `Corporate Responsibility`, `Artificial Intelligence`, etc.
+
+    ## Entities
+
+    Our world-leading entity extraction ensures you never miss updates about the people, places or companies you or your clients care about most. Signal AI uses machine learning to identify and disambiguate these entities so it can discern between _‘Iceland’_ the supermarket and _‘Iceland’_ the country.
+    The API provides the ability to query for mentions of one or many entities. Examples of entities include: `Tim Cook`, `Apple Inc.`, `United States`, `Hong Kong`, etc.
+
+    ### Sentiment
+
+    Our proprietary AIQ framework looks at the context within articles to identify the sentiment around every mention of an entity in the article's content.
+    For example, if an article mentions _“Volvo’s new electric vehicles provide better range than the Tesla Model 3”_, Signal AI will recognise Volvo as having a positive sentiment while Tesla as negative.
+    Each mention is then given a `negative`, `neutral`, or `positive` label which is included in the metadata returned with each document. In addition, an aggregated document-level sentiment label is also computed for each entity, indicating the overall sentiment around this entity in the document.
+    Sentiment labels are only attached to entities and their mentions, and not to topics.
+
+    ### Salience
+
+    A salience score is computed for every entity found in an article. It provides information about the importance or centrality of that entity to the entire article text. The higher the score, the more the article is ‘about’ the entity. We expose this as a `salient` boolean attribute if the score is above a threshold.
+    The `salience-rank` of the entity is the rank order of each entity's salience score. The entity of rank 1 is the most central to the article. It is possible that an article contains no salient entities.
+
+    When querying by entity, it is also possible to increase the relevance of results by restricting the search to documents for which these entities are salient, using the `where.entities.salient-only` flag.
+
+    Next, we describe the different API endpoints that enable these capabilities
+
+    # Authorization
+
+    Access to the API is authorized using OAuth2 Bearer Tokens.
+
+    <!-- ReDoc-Inject: <security-definitions> -->
+
+    # Endpoints
+
+    ## Concept Discovery
+
+    The following endpoints allow the exploration of Signal AI's trained concepts (topics and entities), and publication sources, for the purpose of crafting content search and affinity-related queries.
+
+    ### `/topics`
+
+    ```bash
+    curl \
+      -H "Authorization: Bearer eyJhbGciOi…" \
+      -H "Content-Type: application/json" \
+      https://api.signal-ai.com/topics?name=environment&size=10
+    ```
+
+    ### `/categories/iptc-media-topics`
+
+    ```bash
+    curl \
+      -H "Authorization: Bearer eyJhbGciOi…" \
+      -H "Content-Type: application/json" \
+      https://api.signal-ai.com/categories/iptc-media-topics
+    ```
+
+    ### `/entities`
+
+    ```bash
+    curl \
+      -H "Authorization: Bearer eyJhbGciOi…" \
+      -H "Content-Type: application/json" \
+      https://api.signal-ai.com/entities?type=person&name=cook&size=10
+    ```
+
+    ### `/sources`
+
+    ```bash
+    curl \
+      -H "Authorization: Bearer eyJhbGciOi…" \
+      -H "Content-Type: application/json" \
+      https://api.signal-ai.com/sources?name=times&size=10
+    ```
+
+    ### `/source-locations`
+
+    ```bash
+    curl \
+      -H "Authorization: Bearer eyJhbGciOi…" \
+      -H "Content-Type: application/json" \
+      https://api.signal-ai.com/source-locations
+    ```
+
+    ## Content Search
+
+    This endpoint allows searching through Signal AI's vast content datasets, using a sophisticated query language.
+
+    ### `/search`
+
+    ```bash
+    curl \
+      -H "Authorization: Bearer eyJhbGciOi…" \
+      -H "Content-Type: application/json" \
+      -X POST \
+      -d '{ "where": { "entities": { "id": { "eq": "11cab8df-4be1-470f-8f49-8f7f0863ec95" } } } }' \
+      https://api.signal-ai.com/search
+    ```
+
+    ## Content Metrics
+
+    This endpoint provides aggregated metrics over all our news & regulatory content.
+
+    ### `/metrics`
+
+    ```bash
+    curl \
+      -H "Authorization: Bearer eyJhbGciOi…" \
+      -H "Content-Type: application/json" \
+      -X POST \
+      -d '{ "where": { "entities": { "id": { "eq": "11cab8df-4be1-470f-8f49-8f7f0863ec95" } } },
+            "aggregations": { "group-by": ["published-at", "country"], "metrics": ["document-count"] } }' \
+      https://api.signal-ai.com/metrics
+    ```
+
+    ## Affinity
+
+    The Affinity API allows users to discover connections between entities (e.g.
+    companies) and topics, understand their proximity, and how it develops over
+    time, providing them with actionable intelligence about reputational risks and
+    communication opportunities. It is powered by the Signal AI Knowledge Graph,
+    which is generated by analyzing millions of documents every day.
+
+    ```bash
+    curl \
+      -H "Authorization: Bearer eyJhbGciOi…" \
+      -H "Content-Type: application/json" \
+      -X POST \
+      -d '{ "relationship": { "type": "proximity", "date": { "start": "2022-01", "end": "2022-01" }, "interval": "month", "limit-per-interval": 10 },
+            "source-concept": {"id": "11cab8df-4be1-470f-8f49-8f7f0863ec95"},
+            "target-concepts": { "types": ["topic"] } }' \
+      https://api.signal-ai.com/affinity
+    ```
+
+    ## Events
+
+    The Events API enables monitoring of major news events, allowing users to easily identify changes that could impact them or their business. By leveraging the 15-month archive, users can easily get up to speed on the recent developments involving specific companies, industries or topics.
+
+    ```bash
+    curl \
+    -H 'Authorization: Bearer eyJhbGc...' \
+    -H 'Content-Type: application/json' \
+    -X POST \
+    -d '{
+        "where": {
+            "date": {
+                "gte": "2022-05-01",
+                "lte": "2022-05-30"
+            },
+            "entities": {
+                "id": {"any": ["aee5dfa5-cf7e-4bcd-80c3-79b0125effc8"]}
+            }
+        },
+        "size": 50
+    }' \
+    https://api.signal-ai.com/events
+    ```
+
+    # Pagination
+
+    Some of our endpoints such as `/search` and `/entities` limit the number of results returned in the response. Often there is a `size` parameter that controls how many results should be returned per page. To get additional results you will need to use pagination.
+
+    Endpoints that have pagination will include a `next-cursor` field in the response. This can be used to fetch additional results by issuing further requests with the same query and specifying a `from-cursor` parameter. The value of `next-cursor` from the last response should be used to set the `from-cursor` parameter. For `GET` requests this will need to be specified in the query parameter. For `POST` requests this will need to be specified in the request body.
+
+    The absence of `next-cursor` in the response indicates that you have consumed all results matching the query.
+
+    # Rate Limiting
+
+    We put limits on all API requests to protect our system from receiving more requests than it can handle, and to ensure an equitable distribution of the system resources across API clients.
+    The following API rate limits apply on a per-endpoint, per-Client ID basis:
+
+    | Endpoint         | requests/second | requests/minute |
+    | ---------------- | --------------- | --------------- |
+    | Content search   | 2               | 30              |
+    | Content metrics  | 2               | 15              |
+    | Concept affinity | 2               | 30              |
+    | All others       | 5               | 60              |
+
+    # Error responses
+
+    ### 400 – Bad request
+
+    The request is invalid. This could be due to invalid parameters or invalid
+    values. The error response will contain a top level field called `errors`
+    listing the errors. Each error is reported as a tuple:
+
+    - the first element indicates which element is invalid, potentially providing a
+      path to the incorrect field in the form `#/{type}/path/to/error` with `{type}`
+      one of:
+      - `query-params` for errors in URL parameters (or query string parameters)
+      - `path-params` for errors in the URL (usually invalid resource ID)
+      - `body` for errors in the body (for `POST` requests)
+    - the second element contains an indication about the error
+
+    Example of an error message:
+
+    ```json
+    {
+      "errors": [
+        ["#/query-params/sizee", "Invalid parameter"],
+        ["#/path-params/id", "String does not match format \"uuid\""],
+        [
+          "#/body/relationship/date/start",
+          "must not be older than 15 months ago (2000-01)"
+        ]
+      ]
+    }
+    ```
+
+    ### 401 – Unauthorized
+
+    Incorrect credentials, refer to the [Authorization](#section/Authorization)
+    section for more information.
+
+    ### 404 – Not found
+
+    Invalid endpoint or unknown resource. For "GET" requests in particular (e.g.
+    `GET /entities/{id}`) the body of the response will hold the invalid field.
+
+    ### 429 – Too many requests
+
+    The server received too many requests in the last second or minute. The [rate
+    limiting](#section/Rate-Limiting) section lists the limits for each endpoints.
+
+    ### 500 – Internal server error
+
+    The server encountered a problem while processing the request and failed
+    unexpectedly. These errors are actively monitored and are automatically reported
+    to our team so they can be investigated and fixed.
+
+    ### 502/503/504 – Gateway error / service unavailable
+
+    These error responses mean that the server either returned an invalid response
+    or could not respond in time. For example, this could be due to unexpected high
+    load on the server. It is usually safe to retry the request after some time.
+
+    # Dates & Time Zones
+
+    The time zone that dictates the publication date is UTC. To be more precise, dates should respect the ISO 8601 format, where “Z” indicates UTC+0.
+
+    # Changelog
+
+    ## v1.4 - 04/04/2023
+
+    - Events GA
+      - Added support for pagination
+      - Added `/events/{hash}` endpoint
+
+    ## v1.3 - 28/07/2022
+
+    - New Events capability
+      - Added the new `events` endpoint for monitoring major news events
+      - Enabled story-level metrics in the `metrics` endpoint to support volume and sentiment analysis of events
+
+    ## v1.2 - 08/06/2022
+
+    - Improved Search capability
+      - Added support for `story-id` as a search query criterion
+      - Added support for `source.region` and `source.subregion` as search query criteria
+
+    ## v1.1 - 17/02/2022
+
+    - Improved Affinity capability
+
+      - Added the new `affinity` endpoint for querying relationships between concepts
+      - Deprecated the existing `affinity/entities` and `affinity/topics` endpoints
+      - Improved the `proximity-score` and `sentiment-score` models for better explainability and precision
+
+      New endpoint:
+
+      - `POST /affinity`
+
+      Deprecated endpoints:
+
+      - `GET /affinity/entities`
+      - `GET /affinity/topics`
+  version: v1.3
+servers:
+- url: https://api.signal-ai.com
+security:
+- OAuth2:
+  - manage-organisation
+tags:
+- name: Organisation
+paths:
+  /users:
+    get:
+      operationId: list-users
+      security:
+      - OAuth2:
+        - manage-organisation
+      tags:
+      - Organisation
+      summary: List users in your organisation
+      description: Returns all users in the organisation of the authenticated API credential. Requires a credential with the
+        `manage-organisation` capability, granted to organisation administrators.
+      responses:
+        '200':
+          description: Returns the list of users in your organisation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsersResponse'
+components:
+  schemas:
+    ResourceId:
+      type: string
+      format: uuid
+      pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+      example: bcd2d868-ed38-4382-b94a-622a30fc3215
+    User:
+      type: object
+      required:
+      - id
+      additionalProperties: false
+      properties:
+        updated-at:
+          type: string
+        email:
+          type: string
+        last-name:
+          type: string
+        timezone:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+          description: Role names held by the user
+        company-role:
+          type: string
+          description: Free-text job title
+        first-name:
+          type: string
+        id:
+          $ref: '#/components/schemas/ResourceId'
+        activated:
+          type: boolean
+        created-at:
+          type: string
+    UsersResponse:
+      type: object
+      required:
+      - users
+      additionalProperties: false
+      properties:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: |
+        To obtain the Bearer Token using the Client ID / Secret pair provided to you:
+
+        ```bash
+        curl -X POST \
+          -d 'grant_type=client_credentials' \
+          -d 'client_id=YOUR_CLIENT_ID' \
+          -d 'client_secret=YOUR_CLIENT_SECRET' \
+          https://api.signal-ai.com/auth/token
+        ```
+
+        This will return the following JSON response:
+
+        ```json
+        {
+            "access_token": "eyJhbGciOi…",
+            "expires_in": 86400,
+            …
+        }
+        ```
+
+        You must send the `access_token` from this response in the Authorization header when making requests to other API endpoints:
+
+        ```bash
+        curl -H "Authorization: Bearer eyJhbGciOi…" \
+          https://api.signal-ai.com/…
+        ```
+
+        Access tokens will expire 24 hours from the time they were issued.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.signal-ai.com/auth/token
+          scopes:
+            default: Access to discovery endpoints
+            search: Access to content search endpoint
+            metrics: Access to content metrics endpoint
+            affinity: Access to concept affinity endpoints
+            events: Access to events endpoint
+            risk-events: Access to risk events
+            manage-organisation: Access to organisation administration endpoints

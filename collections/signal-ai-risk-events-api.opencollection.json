@@ -1,0 +1,97 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Signal AI Affinity Risk Events API",
+    "version": "v1.3"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "https://api.signal-ai.com/auth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Risk Events",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Risk Events Search",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.signal-ai.com/risk-events-search",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "client_credentials",
+              "accessTokenUrl": "https://api.signal-ai.com/auth/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "With our risk events search you can find significant events that impact business risk, extracted from our dataset of global news.\n\nEvents are derived from news content and clustered on a daily basis. Each event instance is labelled according to the [Risk Event Definition][] it matched. It also includes information about the entities that instigated the event (\"actors\"), and those directly impacted (\"targets\").\n\n### Search query criteria\n\nConstruct a query to find events of interest by specifying"
+        },
+        {
+          "info": {
+            "name": "Risk Event Definitions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.signal-ai.com/risk-events-definitions",
+            "auth": {
+              "type": "oauth2",
+              "flow": "client_credentials",
+              "accessTokenUrl": "https://api.signal-ai.com/auth/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Our Risk Event Definitions represent a specific classification that we apply to news to extract events. Each definition is intended to describe a specific kind of concrete event that might happen. The goal is to find objective evidence of actions happening in the world, and avoid general discussion and speculation.\n\nEvent definitions can be used for both filtering [Risk Events][] and computing [Risk Scores][].\n\n[Risk Events]: #tag/Risk-Events/operation/risk-events-search\n[Risk Scores]: #tag/Risk"
+        },
+        {
+          "info": {
+            "name": "Risk Events Scores",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.signal-ai.com/risk-events-scores",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "client_credentials",
+              "accessTokenUrl": "https://api.signal-ai.com/auth/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Our risk scoring methodology provides an indication of how exposed a company may be to a specific risk. It does this by looking at the frequency of particular types of events, and how prominent this type of event is in the news media.\n\n### Scoring query criteria\n\nScoring is based on selecting events for a date range and a \"cohort\" of entities with a `where` clause, then applying scoring options with a `score-by` clause.\n\nThe `where` clause is a subset of what is available in [Risk Events Search]"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

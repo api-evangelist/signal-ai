@@ -1,0 +1,60 @@
+generated: '2026-08-13'
+method: searched
+source: https://github.com/signal-ai/signal-api-tools
+notes: >-
+  Signal AI publishes no client library to npm, PyPI, Maven Central, NuGet,
+  RubyGems, crates.io, Packagist or pkg.go.dev. The only first-party client code
+  is a Python helper package inside the public `signal-api-tools` repository on
+  the Signal AI GitHub organisation, installed from source (`pip install -e .`)
+  and never released to a registry, so there is no version to read and no
+  published release date. Registry searches for "signal-ai"/"signalai" returned
+  only unrelated third-party projects (npm `signal-ai-code-challenge`, PyPI
+  `signalai` — a vibration-signal analysis library by an unrelated author).
+package_count: 1
+official_count: 1
+sdk_pointer_emitted: false
+sdk_pointer_reason: >-
+  No `SDKs` pointer is wired in apis.yml. The repository is first-party and does
+  contain a real client class, but Signal AI's own README disclaims it — "These
+  example tools are provided 'as is', without warranty of any kind. They were
+  created to demonstrate how one could interact with the Signal AI API. All
+  integration of the Signal AI API should ultimately use the latest version of the
+  documentation as reference." Asserting an SDK the vendor explicitly declines to
+  call one would credit Signal AI with a client-library programme it does not run.
+  Recorded as a Packages entry instead.
+packages:
+- name: signal-api-tools
+  language: python
+  registry: github
+  official: true
+  url: https://github.com/signal-ai/signal-api-tools
+  install: pip install -e . -r requirements.txt
+  version: null
+  published: null
+  repo_last_push: '2023-05-23'
+  covers:
+  - Content Search
+  - Content Metrics
+  - Affinity
+  - Events
+  note: >-
+    Ships `signal_api/signalAPI.py` — a `requests`+`backoff` client with a
+    `Paginate` iterator that follows the API's `next-cursor`/`from-cursor`
+    contract and retries on 401/429. Declared in a bare `setup.py` with no
+    `version=`, never uploaded to PyPI, so `version` and `published` are null by
+    fact rather than by omission: there is no registry metadata endpoint to
+    query. The repository's own README calls these tools "example tools ...
+    provided 'as is'" and directs integrators to the API documentation as the
+    reference, and the last push (2023-05-23) predates the `/users` +
+    `manage-organisation` surface now live in the OpenAPI — a decay signal.
+  registry_probes:
+  - registry: pypi
+    query: https://pypi.org/pypi/signal-ai/json
+    status: 404
+  - registry: pypi
+    query: https://pypi.org/pypi/signal-ai-api/json
+    status: 404
+  - registry: npm
+    query: https://registry.npmjs.org/-/v1/search?text=signal-ai
+    status: 200
+    result: no first-party package in results

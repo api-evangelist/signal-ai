@@ -1,22 +1,74 @@
-generated: '2026-07-21'
+generated: '2026-08-13'
 method: searched
-source: openapi/signal-ai-openapi-original.json + probed status page
+source: https://api.signal-ai.com/docs + https://signalai.statuspage.io/api/v2/summary.json
 versioning:
   scheme: unversioned-host
-  current: null
+  current: v1.4
+  declared_in_spec: v1.3
+  runtime_header: signal-version
+  runtime_header_value_observed: '1'
   notes: >-
-    The API is served from an unversioned host (https://api.signal-ai.com) with no
-    version prefix in the paths; the OpenAPI document declares openapi 3.1.0.
+    The API is served from an unversioned host (https://api.signal-ai.com) with
+    no version prefix in the paths and no version request header; the OpenAPI
+    document declares openapi 3.1.0 with info.version `v1.3`, while the published
+    changelog's newest entry is `v1.4` (04/04/2023) — the two disagree. Responses
+    carry a `signal-version: 1` header (observed 2026-08-13) that marks the
+    platform generation, not the documented point release.
+  changelog: changelog/signal-ai-changelog.yml
 deprecation:
   policy_url: null
   sunset_header: false
+  deprecation_header: false
   notes: >-
-    No published deprecation policy or RFC 8594 Sunset/Deprecation header support was
-    found, but the OpenAPI marks specific operations and schemas as deprecated:true.
+    No published deprecation policy and no RFC 8594 Sunset/Deprecation header
+    support was found. Deprecation is signalled in two weaker ways: `deprecated:
+    true` on specific operations and schemas in the OpenAPI, and a changelog note
+    when an endpoint is retired. The v1.1 entry deprecated `GET
+    /affinity/entities` and `GET /affinity/topics`; both are now absent from the
+    live spec entirely, so they were removed with no dated sunset and no header
+    warning on the wire.
 status_page: https://signalai.statuspage.io
+status_page_api: https://signalai.statuspage.io/api/v2/summary.json
+status_page_evidence:
+  probed: '2026-08-13'
+  status: 200
+  page_id: j3jj9zvhjnwy
+  components:
+  - name: Application
+    status: operational
+    description: Main web application and analysis platform
+  - name: API
+    status: operational
+    description: Our Platform API
+  note: >-
+    Atlassian Statuspage with a machine-readable JSON API and a distinct
+    component for the API itself. The page's own `updated_at` is 2020-12-24 and
+    the summary reports zero incidents and zero scheduled maintenances on record,
+    so uptime history published through this channel is thin.
 sla:
   url: null
   uptime_target: null
+  notes: No public SLA or uptime commitment is published.
+support:
+  url: https://signal-ai.com/contact-us
 deprecated_operations:
-- openapi/signal-ai-openapi-original.json#get-categories-iptc
-- openapi/signal-ai-openapi-original.json#get-category-iptc
+- operationId: get-categories-iptc
+  path: GET /categories/iptc-media-topics
+  source: openapi/signal-ai-openapi-original.json
+- operationId: get-category-iptc
+  path: GET /categories/iptc-media-topics/{id}
+  source: openapi/signal-ai-openapi-original.json
+removed_operations:
+- path: GET /affinity/entities
+  deprecated_in: v1.1 (17/02/2022)
+  removed: absent from the live OpenAPI as of 2026-08-13; no dated sunset published
+- path: GET /affinity/topics
+  deprecated_in: v1.1 (17/02/2022)
+  removed: absent from the live OpenAPI as of 2026-08-13; no dated sunset published
+recent_additions:
+- path: GET /users
+  operationId: list-users
+  first_observed: '2026-08-13'
+  logged_in_changelog: false
+  note: New `Organisation` tag and `manage-organisation` scope, present in the live
+    spec but in no changelog entry.
