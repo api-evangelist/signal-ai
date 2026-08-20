@@ -303,6 +303,8 @@ apis:
   humanURL: https://signal-ai.com/solutions/api
   baseURL: https://api.signal-ai.com
   tags:
+  - Event
+  tags_raw:
   - Events
   properties:
   - type: OpenAPI
