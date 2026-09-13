@@ -2,21 +2,16 @@ generated: '2026-08-13'
 method: probed
 status: published
 source: https://mcp.signal-ai.com/.well-known/oauth-protected-resource
-notes: >-
-  Signal AI runs an official hosted, remote MCP server at
-  https://mcp.signal-ai.com. This round upgraded the evidence from "401 wall" to
-  spec-level confirmation: an unauthenticated
-  POST https://mcp.signal-ai.com/mcp with a `tools/list` JSON-RPC body returns
-  HTTP 401 carrying a correct RFC 9728 challenge —
-  `WWW-Authenticate: Bearer resource_metadata="https://mcp.signal-ai.com/.well-known/oauth-protected-resource"` —
-  and that metadata document resolves anonymously (HTTP 200), declaring the
-  resource, its authorization server and an `mcp:tools` scope. The server is
-  therefore a real, correctly-advertised, OAuth-gated remote MCP endpoint. The
-  concrete tool list is NOT publicly enumerable: `tools/list` requires a bearer
-  token, so the tools[] below remain DERIVED candidates mapped from the public
-  OpenAPI operations and may not match the server's actual tool names or input
-  schemas. Confirming them requires authenticated introspection with Signal AI
-  credentials.
+notes: 'Signal AI runs an official hosted, remote MCP server at https://mcp.signal-ai.com. This round
+  upgraded the evidence from "401 wall" to spec-level confirmation: an unauthenticated POST https://mcp.signal-ai.com/mcp
+  with a `tools/list` JSON-RPC body returns HTTP 401 carrying a correct RFC 9728 challenge — `WWW-Authenticate:
+  Bearer resource_metadata="https://mcp.signal-ai.com/.well-known/oauth-protected-resource"` — and that
+  metadata document resolves anonymously (HTTP 200), declaring the resource, its authorization server
+  and an `mcp:tools` scope. The server is therefore a real, correctly-advertised, OAuth-gated remote MCP
+  endpoint. The concrete tool list is NOT publicly enumerable: `tools/list` requires a bearer token, so
+  the tools[] below remain DERIVED candidates mapped from the public OpenAPI operations and may not match
+  the server''s actual tool names or input schemas. Confirming them requires authenticated introspection
+  with Signal AI credentials.'
 server:
   name: signal-ai
   transport: http
@@ -26,14 +21,12 @@ server:
     sse: https://mcp.signal-ai.com/sse
   auth: oauth2
   auth_evidence:
-  - POST https://mcp.signal-ai.com/mcp {"jsonrpc":"2.0","id":1,"method":"tools/list"}
-    -> 401 {"error":"Jwt is missing"} (probed 2026-08-13)
+  - POST https://mcp.signal-ai.com/mcp {"jsonrpc":"2.0","id":1,"method":"tools/list"} -> 401 {"error":"Jwt
+    is missing"} (probed 2026-08-13)
   - 'WWW-Authenticate: Bearer realm="https://mcp.signal-ai.com/mcp"'
   - 'WWW-Authenticate: Bearer resource_metadata="https://mcp.signal-ai.com/.well-known/oauth-protected-resource"'
-  - GET https://mcp.signal-ai.com/.well-known/oauth-protected-resource -> 200 (RFC
-    9728)
-  - GET https://mcp.signal-ai.com/.well-known/oauth-authorization-server -> 200 (RFC
-    8414)
+  - GET https://mcp.signal-ai.com/.well-known/oauth-protected-resource -> 200 (RFC 9728)
+  - GET https://mcp.signal-ai.com/.well-known/oauth-authorization-server -> 200 (RFC 8414)
   authorization_server: https://login.signal-ai.com/auth/realms/signal
   scopes_supported:
   - openid
@@ -44,13 +37,11 @@ server:
   docs:
     url: https://mcp.signal-ai.com/docs
     status: 302
-    note: Redirects to the Keycloak authorization endpoint — the MCP server's own
-      documentation is behind login, so no public tool reference exists.
+    note: Redirects to the Keycloak authorization endpoint — the MCP server's own documentation is behind
+      login, so no public tool reference exists.
 tools_status: derived-candidates
-tools_evidence: >-
-  tools/list is auth-gated (401). Names below are derived from OpenAPI
-  operationIds in openapi/_original/signal-ai-openapi-original.json, not read
-  from the server.
+tools_evidence: tools/list is auth-gated (401). Names below are derived from OpenAPI operationIds in openapi/_original/signal-ai-openapi-original.json,
+  not read from the server.
 tools:
 - name: search_documents
   description: AI-powered content search over Signal AI's billion+ document corpus
@@ -105,14 +96,11 @@ tools:
   source_operation: list-users
 deployment:
   mode: remote
-  endpoint: https://mcp.signal-ai.com/mcp
-  auth: oauth
+  endpoint: https://mcp.signal-ai.com
   verified: probed
-  probe: rfc9728-challenge
-  checked: '2026-08-13'
-  source: POST /mcp -> 401 + WWW-Authenticate resource_metadata; metadata document 200
-  note: >-
-    Remote only. Signal AI ships no stdio package — there is no npx/pip install
-    for a Signal AI MCP server on any registry, so this is an endpoint an agent
-    can reach today given credentials, not a local server a human must install.
+  probe: gated
+  checked: '2026-09-11'
+  source: wall re-adjudication 2026-09-11 (RFC 9728 / JSON-RPC envelope)
+  probe_prior: wall
+  probe_why: RFC 9728 challenge (host-wide OAuth-protected resource)
 crosswalk: mcp/signal-ai-tool-crosswalk.yml
