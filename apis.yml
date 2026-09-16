@@ -1,14 +1,12 @@
 aid: signal-ai
 name: Signal AI
-description: >-
-  Signal AI (Signal Media Ltd) is an AI-powered reputation and risk intelligence
-  platform that turns the world's largest real-time dataset of global news, social,
-  broadcast and regulatory content into actionable insight. Its proprietary AIQ
-  framework understands, enriches and surfaces relevant coverage across 226 markets
-  and 120+ languages, ingesting 5.5M+ articles and labelling 100M+ entities and topics
-  daily. The Signal AI API is an HTTP+JSON API offering programmatic access to the
-  platform via Content Search, Content Metrics, Affinity (the Signal AI Knowledge
-  Graph), Events, and Risk Events endpoints, secured with OAuth2 client-credentials.
+description: Signal AI (Signal Media Ltd) is an AI-powered reputation and risk intelligence platform that
+  turns the world's largest real-time dataset of global news, social, broadcast and regulatory content
+  into actionable insight. Its proprietary AIQ framework understands, enriches and surfaces relevant coverage
+  across 226 markets and 120+ languages, ingesting 5.5M+ articles and labelling 100M+ entities and topics
+  daily. The Signal AI API is an HTTP+JSON API offering programmatic access to the platform via Content
+  Search, Content Metrics, Affinity (the Signal AI Knowledge Graph), Events, and Risk Events endpoints,
+  secured with OAuth2 client-credentials.
 url: https://raw.githubusercontent.com/api-evangelist/signal-ai/refs/heads/main/apis.yml
 x-type: company
 x-source: vc-portfolio
@@ -40,17 +38,16 @@ accessModel:
   source:
   - plans/signal-ai-plans-pricing.yml
   - https://signal-ai.com/solutions/api
-  notes: >-
-    Corrected 2026-08-13. The prior "self-serve signup" reading was derived from the
-    presence of an OAuth2 client-credentials flow, but Signal AI issues the Client ID
-    / Client Secret pair to contracted customers ("provided to you", per the OpenAPI
-    securityScheme description); /pricing and /plans both 404 and the API product page
-    ends in a "Request a demo" CTA. There is no signup that yields working credentials.
+  notes: Corrected 2026-08-13. The prior "self-serve signup" reading was derived from the presence of
+    an OAuth2 client-credentials flow, but Signal AI issues the Client ID / Client Secret pair to contracted
+    customers ("provided to you", per the OpenAPI securityScheme description); /pricing and /plans both
+    404 and the API product page ends in a "Request a demo" CTA. There is no signup that yields working
+    credentials.
   generated: '2026-08-13'
   method: searched
 specificationVersion: '0.23'
 created: '2026-07-17'
-modified: '2026-08-13'
+modified: '2026-09-16'
 tags:
 - Company
 - Media Intelligence
@@ -66,144 +63,64 @@ image: https://login.signal-ai.com/auth/resources/hlcwe/login/signal/img/apple-t
 apis:
 - aid: signal-ai:signal-ai-affinity-api
   name: Signal AI Affinity API
-  description: >-
-    The Affinity API endpoints allow API users to leverage the power of the Signal
-
-    AI Knowledge Graph, derived from billions of documents and updated regularly.
-
-
-    The Signal AI Knowledge Graph consists of:
-
-    * **nodes** which represent concepts such as entities and topics
-
-    * **edges** represent connections describing relationships between these concepts
-
-
-    Using the Affinity API, users can retrieve data for hundreds of thousands of
-
-    entities and topics. The sole relationship type currently accessible via the
-
-    Affinity API is proximity.
-
-
-    ## Proximity
-
-
-    Proximity represents how closely entities and topics are associated in the news
-
-    and other types of content processed by Signal AI.
-
-
-    ### What is proximity?
-
-
-    The proximity between an entity (e.g. Tesla) and a topic (e.g. Product recall) is a measure of how
-    they are related over a period of time (e.g. a certain month) as perceived in the news (almost all
-    sources we ingest into the Signal platform). It reflects the likelihood of the entity and topic in
-    question being mentioned together, with 0 meaning the two are very unlikely to appear together, and
-    1 meaning they are most likely to appear together (NB: the scale is not linear.) We measure this by
-    observing the mentions of the topic, the (salient) mentions of the entity and their (salient) co-mentions.
-    As opposed to relying only on the volume of co-mentions, the proximity score captures how significant
-    these co-mentions are based on the overall volume of coverage for both the entity and the topic. **For
-    example, if the entity has a high number of co-mentions with a topic, but the topic is very common
-    (e.g Social Media), we may assign a low proximity score. On the other hand if there are only a few
-    co-mentions with a very niche topic, we may assign a high proximity score.**
-
-
-    The proximity score is based on the normalized Google Distance (from Information distance theory)
-    and it has a value between 0 and 1:
-
-    - A score of 0 means the two concepts are not related and never or rarely co-mentioned together;
-
-    - The higher the score is, the more related the concepts are and the higher the chance is of observing
-    significant co-mentions.
-
-    - A proximity close to 1 means that if one of the concepts is mentioned in an article, it is most
-    likely that the other concept will also be mentioned in the article.
-
-
-    To illustrate how proximity is implemented, consider this conceptual representation of the Signal
-    AI Knowledge Graph below:
-
-
-    ![](/assets/img/affinity_example.svg)
-
-
-    In this graph, we see four nodes: two organizations (PepsiCo and American Chemical Society) and two
-    topics (Food and Beverage and Chemicals).
-
-
-    We also see three edges each representing a proximity relationship: (PepsiCo and Food and Beverage),
-    (PepsiCo and Chemicals) and (American Chemical Society and Chemicals). We can infer from these edges
-    that PepsiCo has a closer association to Food and Beverage than Chemicals. Also we can infer that
-    American Chemical Society has a stronger connection to Chemicals than PepsiCo.
-
-
-    ### Using the proximity score
-
-
-    The proximity score can be used in different ways:
-
-
-    #### 1. Discovery
-
-
-    We can identify the closest topics to an entity by ranking them according to their proximity score.
-    Note that if we simply use the volume of co-mentions to rank topics, we will end up with the common
-    topics (which might be considered noise).
-
-
-    Likewise, we can do the opposite and identify the organizations (or any other type of entities) that
-    are closest to a certain topic. Note, if we simply use the volume of co-mentions to rank organizations,
-    we will end up with the common ones which are often mentioned in news articles, e.g. BBC, NASDAQ,
-    UK, US
-
-
-
-    #### 2. Comparison
-
-
-    - **Comparing Entities**: We can compare two entities on how they are related to certain topics, ie.
-    which one is more related. A higher proximity score means more relatedness to a topic. Note that this
-    is different from comparing them based on the volume (number of articles on topic). For example one
-    big company may have way more articles on a topic than a smaller company, but the smaller company
-    may have a higher proximity. This is  because it has way fewer mentions than the big company overall
-    and a few articles on the topic contribute to a higher proximity score.
-
-    - **Comparing Topics**: Likewise, we can compare two topics on how they are related to certain entities.
-    A higher proximity score means more relatedness to an entity.
-
-    - **Comparison over time**: We can say if the proximity between an entity and topic has increased
-    or decreased from one month to another by comparing their proximity score in those months.
-
-
-    NB: While the proximity scores are ordered, they are not linear. *This means you can't easily interpret
-    the difference between proximity scores i.e. the difference between 0 and 0.1 proximity is not the
-    same as the difference between 0.4 and 0.5 proximity.*
-
-
-    ### Proximity metadata
-
-
-    Each proximity relationship returned contains the following metadata:
-
-    - `proximity-score`: the proximity score in the range `[0..1]` as described above
-
-    - `sentiment-score`: for a proximity relationship between an entity and a topic, this score represents
-    the sentiment towards the entity with regards to its relationship to the topic. The sentiment score
-    ranges between `[-1..1]` and is computed as follows (taking into account salient entity mentions only:
-      ```
-      #(positive entity/topic co-mentions) - #(negative entity/topic co-mentions) /  #(entity/topic co-mentions)
-      ```
-
-    ### Using proximity
-
-
-    Using proximity relationships, one can uncover unknowns and insights on a large scale. The API offers
-    one endpoint to allow the users to query and explore proximity relationships.
-
-
-    Please note that only the last 15 months of data can be queried.
+  description: "The Affinity API endpoints allow API users to leverage the power of the Signal\nAI Knowledge\
+    \ Graph, derived from billions of documents and updated regularly.\n\nThe Signal AI Knowledge Graph\
+    \ consists of:\n* **nodes** which represent concepts such as entities and topics\n* **edges** represent\
+    \ connections describing relationships between these concepts\n\nUsing the Affinity API, users can\
+    \ retrieve data for hundreds of thousands of\nentities and topics. The sole relationship type currently\
+    \ accessible via the\nAffinity API is proximity.\n\n## Proximity\n\nProximity represents how closely\
+    \ entities and topics are associated in the news\nand other types of content processed by Signal AI.\n\
+    \n### What is proximity?\n\nThe proximity between an entity (e.g. Tesla) and a topic (e.g. Product\
+    \ recall) is a measure of how they are related over a period of time (e.g. a certain month) as perceived\
+    \ in the news (almost all sources we ingest into the Signal platform). It reflects the likelihood\
+    \ of the entity and topic in question being mentioned together, with 0 meaning the two are very unlikely\
+    \ to appear together, and 1 meaning they are most likely to appear together (NB: the scale is not\
+    \ linear.) We measure this by observing the mentions of the topic, the (salient) mentions of the entity\
+    \ and their (salient) co-mentions. As opposed to relying only on the volume of co-mentions, the proximity\
+    \ score captures how significant these co-mentions are based on the overall volume of coverage for\
+    \ both the entity and the topic. **For example, if the entity has a high number of co-mentions with\
+    \ a topic, but the topic is very common (e.g Social Media), we may assign a low proximity score. On\
+    \ the other hand if there are only a few co-mentions with a very niche topic, we may assign a high\
+    \ proximity score.**\n\nThe proximity score is based on the normalized Google Distance (from Information\
+    \ distance theory) and it has a value between 0 and 1:\n- A score of 0 means the two concepts are\
+    \ not related and never or rarely co-mentioned together;\n- The higher the score is, the more related\
+    \ the concepts are and the higher the chance is of observing significant co-mentions.\n- A proximity\
+    \ close to 1 means that if one of the concepts is mentioned in an article, it is most likely that\
+    \ the other concept will also be mentioned in the article.\n\nTo illustrate how proximity is implemented,\
+    \ consider this conceptual representation of the Signal AI Knowledge Graph below:\n\n![](/assets/img/affinity_example.svg)\n\
+    \nIn this graph, we see four nodes: two organizations (PepsiCo and American Chemical Society) and\
+    \ two topics (Food and Beverage and Chemicals).\n\nWe also see three edges each representing a proximity\
+    \ relationship: (PepsiCo and Food and Beverage), (PepsiCo and Chemicals) and (American Chemical Society\
+    \ and Chemicals). We can infer from these edges that PepsiCo has a closer association to Food and\
+    \ Beverage than Chemicals. Also we can infer that American Chemical Society has a stronger connection\
+    \ to Chemicals than PepsiCo.\n\n### Using the proximity score\n\nThe proximity score can be used in\
+    \ different ways:\n\n#### 1. Discovery\n\nWe can identify the closest topics to an entity by ranking\
+    \ them according to their proximity score. Note that if we simply use the volume of co-mentions to\
+    \ rank topics, we will end up with the common topics (which might be considered noise).\n\nLikewise,\
+    \ we can do the opposite and identify the organizations (or any other type of entities) that are closest\
+    \ to a certain topic. Note, if we simply use the volume of co-mentions to rank organizations, we will\
+    \ end up with the common ones which are often mentioned in news articles, e.g. BBC, NASDAQ, UK, US\n\
+    \n\n#### 2. Comparison\n\n- **Comparing Entities**: We can compare two entities on how they are related\
+    \ to certain topics, ie. which one is more related. A higher proximity score means more relatedness\
+    \ to a topic. Note that this is different from comparing them based on the volume (number of articles\
+    \ on topic). For example one big company may have way more articles on a topic than a smaller company,\
+    \ but the smaller company may have a higher proximity. This is  because it has way fewer mentions\
+    \ than the big company overall and a few articles on the topic contribute to a higher proximity score.\n\
+    - **Comparing Topics**: Likewise, we can compare two topics on how they are related to certain entities.\
+    \ A higher proximity score means more relatedness to an entity.\n- **Comparison over time**: We can\
+    \ say if the proximity between an entity and topic has increased or decreased from one month to another\
+    \ by comparing their proximity score in those months.\n\nNB: While the proximity scores are ordered,\
+    \ they are not linear. *This means you can't easily interpret the difference between proximity scores\
+    \ i.e. the difference between 0 and 0.1 proximity is not the same as the difference between 0.4 and\
+    \ 0.5 proximity.*\n\n### Proximity metadata\n\nEach proximity relationship returned contains the following\
+    \ metadata:\n- `proximity-score`: the proximity score in the range `[0..1]` as described above\n-\
+    \ `sentiment-score`: for a proximity relationship between an entity and a topic, this score represents\
+    \ the sentiment towards the entity with regards to its relationship to the topic. The sentiment score\
+    \ ranges between `[-1..1]` and is computed as follows (taking into account salient entity mentions\
+    \ only:\n  ```\n  #(positive entity/topic co-mentions) - #(negative entity/topic co-mentions) /  #(entity/topic\
+    \ co-mentions)\n  ```\n\n### Using proximity\n\nUsing proximity relationships, one can uncover unknowns\
+    \ and insights on a large scale. The API offers one endpoint to allow the users to query and explore\
+    \ proximity relationships.\n\nPlease note that only the last 15 months of data can be queried."
   humanURL: https://signal-ai.com/solutions/api
   baseURL: https://api.signal-ai.com
   tags:
@@ -273,12 +190,11 @@ apis:
     url: https://api.signal-ai.com/docs
 - aid: signal-ai:signal-ai-events-api
   name: Signal AI Events API
-  description: >-
-    The Events API endpoint identifies significant clusters of news coverage about entities and topics
-    of interest, allowing users to easily identify news events that could impact them or their business,
-    and offering a qualitative deep dive into the quantitative data provided by Metrics and Affinity.
-    By leveraging the 15-month archive, users can easily get up to speed on the recent developments involving
-    specific companies, industries or topics.
+  description: 'The Events API endpoint identifies significant clusters of news coverage about entities
+    and topics of interest, allowing users to easily identify news events that could impact them or their
+    business, and offering a qualitative deep dive into the quantitative data provided by Metrics and
+    Affinity. By leveraging the 15-month archive, users can easily get up to speed on the recent developments
+    involving specific companies, industries or topics.
 
 
     Examples of questions this data can answer include:
@@ -310,9 +226,9 @@ apis:
     * The source ids for the event are included
 
 
-    In APIs it's more common to use the term "id" rather than "hash". We've chosen to use "hash" because
+    In APIs it''s more common to use the term "id" rather than "hash". We''ve chosen to use "hash" because
     these strings can change as we receive new data. In the `/events` endpoint the `event-hash-expiry`
-    field indicates when the hash will expire. Note that it could still be available after this time.
+    field indicates when the hash will expire. Note that it could still be available after this time.'
   humanURL: https://signal-ai.com/solutions/api
   baseURL: https://api.signal-ai.com
   tags:
@@ -384,12 +300,10 @@ apis:
     url: https://api.signal-ai.com/docs
 - aid: signal-ai:signal-ai-organisation-api
   name: Signal AI Organisation API
-  description: >-
-    Organisation administration for the Signal AI API. `GET /users` returns all users
-    in the organisation of the authenticated API credential, and requires a credential
-    carrying the `manage-organisation` capability, which Signal AI grants to organisation
-    administrators. New in the live OpenAPI as of 2026-08-13 and absent from the published
-    changelog, whose newest entry is still v1.4 (04/04/2023).
+  description: Organisation administration for the Signal AI API. `GET /users` returns all users in the
+    organisation of the authenticated API credential, and requires a credential carrying the `manage-organisation`
+    capability, which Signal AI grants to organisation administrators. New in the live OpenAPI as of 2026-08-13
+    and absent from the published changelog, whose newest entry is still v1.4 (04/04/2023).
   humanURL: https://signal-ai.com/solutions/api
   baseURL: https://api.signal-ai.com
   tags:
@@ -407,6 +321,8 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: Website
+  url: https://signal-ai.com
 - type: DomainSecurity
   url: security/signal-ai-domain-security.yml
 - type: Authentication
