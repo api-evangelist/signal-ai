@@ -290,6 +290,8 @@ apis:
   humanURL: https://signal-ai.com/solutions/api
   baseURL: https://api.signal-ai.com
   tags:
+  - Topic
+  tags_raw:
   - Topics
   properties:
   - type: OpenAPI
