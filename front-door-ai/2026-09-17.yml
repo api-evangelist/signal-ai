@@ -1,0 +1,32 @@
+# Front Door AI Index — signal-ai — 2026-09-17
+# AI vocabulary counted on the provider's root page. Generated; do not edit.
+# `score` is null unless ownership is `own` — see front_door_ai.py.
+front_door_ai:
+  slug: signal-ai
+  lexicon_version: '1.0'
+  probed_at: '2026-09-17'
+  host: signal-ai.com
+  final_host: signal-ai.com
+  ownership: own
+  owner: signal-ai
+  shares_host_with: null
+  inherited_from: null
+  verdict: scored
+  score: 53
+  host_score: 53
+  density: 33.17
+  words: 1598
+  tiers:
+    agentic: 5
+    core: 46
+    model: 2
+  ambiguous: 30
+  top_terms:
+    AI: 46
+    intelligence: 28
+    MCP: 2
+    agent: 2
+    copilot: 2
+    AI agent: 1
+    ChatGPT: 1
+    Claude: 1
