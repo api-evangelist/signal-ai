@@ -33,6 +33,11 @@ paths:
                 $ref: '#/components/schemas/UsersResponse'
 components:
   schemas:
+    ResourceId:
+      type: string
+      format: uuid
+      pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+      example: bcd2d868-ed38-4382-b94a-622a30fc3215
     User:
       type: object
       required:
@@ -73,11 +78,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/User'
-    ResourceId:
-      type: string
-      format: uuid
-      pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
-      example: bcd2d868-ed38-4382-b94a-622a30fc3215
   securitySchemes:
     OAuth2:
       type: oauth2

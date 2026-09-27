@@ -103,6 +103,275 @@ paths:
                   $ref: '#/components/examples/metrics-response'
 components:
   schemas:
+    LanguageMatch:
+      oneOf:
+      - type: object
+        additionalProperties: false
+        required:
+        - eq
+        properties:
+          eq:
+            type: string
+            description: Language (e.g. `English`, `Chinese`, `Spanish`, `German`, `Japanese`...)
+      - type: object
+        name: AnyLanguage
+        additionalProperties: false
+        required:
+        - any
+        properties:
+          any:
+            type: array
+            items:
+              type: string
+            description: A list of languages (e.g. `English`, `Chinese`, `Spanish`, `German`, `Japanese`...)
+    EqualsOrAnyOrAllTermsMatch:
+      oneOf:
+      - $ref: '#/components/schemas/EqualsTerm'
+      - $ref: '#/components/schemas/AnyTerms'
+      - $ref: '#/components/schemas/AllTerms'
+    Date:
+      type: string
+      format: date
+      description: "A date based on the IETF RFC 3339 format (e.g. `2023-01-01`).\n    Note that a day is the span of time between 00:00:00 and 23:59:59 based on\n    the UTC timezone. You may prefer using the `date-time` option to match days\n    in a different timezone."
+      example: '2023-01-01'
+    TopicsExclusion:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      properties:
+        id:
+          allOf:
+          - $ref: '#/components/schemas/AnyResourceIds'
+          - properties:
+              any:
+                maxItems: 50
+    CountryExclusion:
+      type: object
+      additionalProperties: false
+      required:
+      - country
+      properties:
+        country:
+          $ref: '#/components/schemas/AnyTerms'
+    EqualsMediaType:
+      type: object
+      additionalProperties: false
+      required:
+      - eq
+      properties:
+        eq:
+          $ref: '#/components/schemas/MediaType'
+    DocumentPosition:
+      type: string
+      enum:
+      - title
+      - title or summary
+      - full content
+      - quotes only
+    AllTerms:
+      type: object
+      additionalProperties: false
+      required:
+      - all
+      properties:
+        all:
+          type: array
+          items:
+            type: string
+    ResourceIds:
+      type: array
+      items:
+        $ref: '#/components/schemas/ResourceId'
+    ExcludeClause:
+      type: object
+      additionalProperties: false
+      properties:
+        entities:
+          $ref: '#/components/schemas/EntitiesExclusion'
+        topics:
+          $ref: '#/components/schemas/TopicsExclusion'
+        source:
+          oneOf:
+          - $ref: '#/components/schemas/SourceExclusion'
+          - $ref: '#/components/schemas/CountryExclusion'
+        keywords:
+          $ref: '#/components/schemas/KeywordsExclusion'
+    CategoriesMatch:
+      type: object
+      deprecated: true
+      additionalProperties: false
+      required:
+      - id
+      properties:
+        id:
+          allOf:
+          - $ref: '#/components/schemas/ResourceIdsMatch'
+          - properties:
+              any:
+                maxItems: 100
+              all:
+                maxItems: 100
+    EntitiesExclusion:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      properties:
+        id:
+          allOf:
+          - $ref: '#/components/schemas/AnyResourceIds'
+          - properties:
+              any:
+                maxItems: 100
+    EqualsTerm:
+      type: object
+      additionalProperties: false
+      required:
+      - eq
+      properties:
+        eq:
+          type: string
+    EqualsResourceId:
+      type: object
+      additionalProperties: false
+      required:
+      - eq
+      properties:
+        eq:
+          $ref: '#/components/schemas/ResourceId'
+    Aggregation:
+      type: object
+      propertyNames:
+        oneOf:
+        - $ref: '#/components/schemas/AggregationDimensionKey'
+        - $ref: '#/components/schemas/AggregationMetricKey'
+    AnyMediaType:
+      type: object
+      additionalProperties: false
+      required:
+      - any
+      properties:
+        any:
+          type: array
+          items:
+            $ref: '#/components/schemas/MediaType'
+    KeywordsExclusion:
+      type: object
+      additionalProperties: false
+      required:
+      - value
+      properties:
+        value:
+          $ref: '#/components/schemas/AnyTerms'
+    DateTimeRangeMatch:
+      type: object
+      properties:
+        gt:
+          $ref: '#/components/schemas/DateOrDateTime'
+        gte:
+          $ref: '#/components/schemas/DateOrDateTime'
+        lt:
+          $ref: '#/components/schemas/DateOrDateTime'
+        lte:
+          $ref: '#/components/schemas/DateOrDateTime'
+      additionalProperties: false
+      minProperties: 1
+      dependentSchemas:
+        gt:
+          not:
+            required:
+            - gte
+        gte:
+          not:
+            required:
+            - gt
+        lt:
+          not:
+            required:
+            - lte
+        lte:
+          not:
+            required:
+            - lt
+    DocumentTopicsMatch:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      properties:
+        id:
+          allOf:
+          - $ref: '#/components/schemas/ResourceIdsMatch'
+          - properties:
+              any:
+                maxItems: 100
+              all:
+                maxItems: 100
+    MentionPositionMatch:
+      type: object
+      additionalProperties: false
+      required:
+      - position
+      properties:
+        position:
+          $ref: '#/components/schemas/DocumentPosition'
+      description: Note that mentions found in `summary` or `quotation` are a subset of the mentions found in the `full content`.
+    AggregationMetricKey:
+      type: string
+      enum:
+      - document-count
+      - story-count
+    AllResourceIds:
+      type: object
+      additionalProperties: false
+      required:
+      - all
+      properties:
+        all:
+          $ref: '#/components/schemas/ResourceIds'
+    MediaTypeMatch:
+      oneOf:
+      - $ref: '#/components/schemas/EqualsMediaType'
+      - $ref: '#/components/schemas/AnyMediaType'
+    ResourceId:
+      type: string
+      format: uuid
+      pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+      example: bcd2d868-ed38-4382-b94a-622a30fc3215
+    AggregationQuerySourceOptions:
+      type: object
+      additionalProperties: false
+      properties:
+        size:
+          type: integer
+          minimum: 1
+          maximum: 100
+        include:
+          type: array
+          minItems: 1
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/ResourceId'
+      default:
+        size: 10
+    AnyResourceIds:
+      type: object
+      additionalProperties: false
+      required:
+      - any
+      properties:
+        any:
+          $ref: '#/components/schemas/ResourceIds'
+    DateOrDateTime:
+      oneOf:
+      - $ref: '#/components/schemas/Date'
+      - $ref: '#/components/schemas/DateTime'
+    DateTime:
+      type: string
+      format: date-time
+      description: "A date and time based on the IETF RFC 3339 format (e.g.\n     `2023-01-01T13:37:00` or `2023-01-01T13:37:00Z` for UTC,\n     `2023-01-01T09:37:00-05:00` for EST). Note that UTC is used by default."
+      example: '2023-01-01T13:37:00'
     AggregationQueryResourcesIncludeOption:
       type: object
       required:
@@ -115,16 +384,41 @@ components:
           maxItems: 100
           items:
             $ref: '#/components/schemas/ResourceId'
-    ResourceIdsMatch:
-      oneOf:
-      - $ref: '#/components/schemas/EqualsResourceId'
-      - $ref: '#/components/schemas/AnyResourceIds'
-      - $ref: '#/components/schemas/AllResourceIds'
-    AggregationMetricKey:
+    AggregationQueryDateIntervalOptions:
+      type: object
+      required:
+      - interval
+      additionalProperties: false
+      properties:
+        interval:
+          type: string
+          enum:
+          - month
+          - week
+          - day
+      default:
+        interval: month
+    AnyTerms:
+      type: object
+      additionalProperties: false
+      required:
+      - any
+      properties:
+        any:
+          type: array
+          items:
+            type: string
+    AggregationDimensionKey:
       type: string
       enum:
-      - document-count
-      - story-count
+      - published-at
+      - source
+      - source.country
+      - language
+      - topic
+      - iptc-media-topic
+      - entity
+      - entity.sentiment
     DocumentMatch:
       type: object
       additionalProperties: false
@@ -151,6 +445,65 @@ components:
           $ref: '#/components/schemas/LanguageMatch'
         media-type:
           $ref: '#/components/schemas/MediaTypeMatch'
+    DocumentKeywordsMatch:
+      type: object
+      required:
+      - value
+      properties:
+        value:
+          allOf:
+          - $ref: '#/components/schemas/EqualsOrAnyOrAllTermsMatch'
+          - description: There is a 50 word limit for keywords across inclusion and exclusion. See the section **Keyword limitations** above for more details.
+        mentions:
+          $ref: '#/components/schemas/MentionPositionMatch'
+      description: Note that to use inclusion keywords, you will also need to include one of `entities`, `sources` or `topics` in your `where` clause.
+    SourceMatch:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          allOf:
+          - $ref: '#/components/schemas/EqualsOrAnyResourceIdsMatch'
+          - properties:
+              any:
+                maxItems: 500
+        country:
+          $ref: '#/components/schemas/EqualsOrAnyTermsMatch'
+        region:
+          $ref: '#/components/schemas/EqualsOrAnyTermsMatch'
+        subregion:
+          $ref: '#/components/schemas/EqualsOrAnyTermsMatch'
+    ResourceIdsMatch:
+      oneOf:
+      - $ref: '#/components/schemas/EqualsResourceId'
+      - $ref: '#/components/schemas/AnyResourceIds'
+      - $ref: '#/components/schemas/AllResourceIds'
+    AggregationQueryTermsIncludeOptions:
+      type: object
+      additionalProperties: false
+      properties:
+        include:
+          type: array
+          minItems: 1
+          maxItems: 100
+          items:
+            type: string
+        size:
+          type: integer
+          minimum: 1
+          maximum: 100
+      default:
+        size: 10
+    MetricsResponse:
+      type: object
+      required:
+      - aggregations
+      additionalProperties: false
+      properties:
+        aggregations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Aggregation'
     SourceExclusion:
       type: object
       additionalProperties: false
@@ -163,64 +516,87 @@ components:
           - properties:
               any:
                 maxItems: 500
-    ResourceId:
-      type: string
-      format: uuid
-      pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
-      example: bcd2d868-ed38-4382-b94a-622a30fc3215
-    AggregationQueryDateIntervalOptions:
+    AggregationQueryOptions:
       type: object
-      required:
-      - interval
       additionalProperties: false
       properties:
-        interval:
-          type: string
-          enum:
-          - month
-          - week
-          - day
+        published-at:
+          $ref: '#/components/schemas/AggregationQueryDateIntervalOptions'
+          description: The date interval to aggregate on.
+        topic:
+          $ref: '#/components/schemas/AggregationQueryResourcesIncludeOption'
+          description: The topics to aggregate on.
+        iptc-media-topic:
+          deprecated: true
+          $ref: '#/components/schemas/AggregationQueryResourcesIncludeOption'
+        entity:
+          $ref: '#/components/schemas/AggregationQueryResourcesIncludeOption'
+          description: The entities to aggregate on.
+        source.country:
+          $ref: '#/components/schemas/AggregationQueryTermsIncludeOptions'
+          description: The countries to aggregate on.
+        language:
+          $ref: '#/components/schemas/AggregationQueryTermsIncludeOptions'
+          description: The languages to aggregate on.
+        source:
+          $ref: '#/components/schemas/AggregationQuerySourceOptions'
+          description: The sources to aggregate on.
       default:
-        interval: month
-    AllTerms:
-      type: object
-      additionalProperties: false
-      required:
-      - all
-      properties:
-        all:
-          type: array
-          items:
-            type: string
+        published-at:
+          interval: month
+        source.country:
+          size: 10
+        language:
+          size: 10
+        source:
+          size: 10
     MediaType:
       type: string
       enum:
       - online
       - print
-    AnyMediaType:
+    DocumentEntitiesMatch:
       type: object
       additionalProperties: false
       required:
-      - any
+      - id
       properties:
-        any:
-          type: array
-          items:
-            $ref: '#/components/schemas/MediaType'
-    DateTime:
-      type: string
-      format: date-time
-      description: "A date and time based on the IETF RFC 3339 format (e.g.\n     `2023-01-01T13:37:00` or `2023-01-01T13:37:00Z` for UTC,\n     `2023-01-01T09:37:00-05:00` for EST). Note that UTC is used by default."
-      example: '2023-01-01T13:37:00'
-    EqualsOrAnyOrAllTermsMatch:
+        id:
+          allOf:
+          - $ref: '#/components/schemas/ResourceIdsMatch'
+          - properties:
+              any:
+                type: array
+                maxItems: 200
+              all:
+                type: array
+                maxItems: 200
+        salient-only:
+          type: boolean
+          description: Only return documents for which these entities are salient
+        mentions:
+          $ref: '#/components/schemas/MentionPositionMatch'
+    EqualsOrAnyResourceIdsMatch:
       oneOf:
-      - $ref: '#/components/schemas/EqualsTerm'
-      - $ref: '#/components/schemas/AnyTerms'
-      - $ref: '#/components/schemas/AllTerms'
+      - $ref: '#/components/schemas/EqualsResourceId'
+      - $ref: '#/components/schemas/AnyResourceIds'
     EqualsOrAnyTermsMatch:
       oneOf:
       - $ref: '#/components/schemas/EqualsTerm'
       - $ref: '#/components/schemas/AnyTerms'
+    MetricsQuery:
+      type: object
+      required:
+      - where
+      - aggregations
+      additionalProperties: false
+      properties:
+        where:
+          $ref: '#/components/schemas/DocumentMatch'
+        exclude:
+          $ref: '#/components/schemas/ExcludeClause'
+        aggregations:
+          $ref: '#/components/schemas/AggregationsQuery'
     AggregationsQuery:
       type: object
       required:
@@ -282,382 +658,6 @@ components:
             options:
               required:
               - iptc-media-topic
-    DocumentTopicsMatch:
-      type: object
-      additionalProperties: false
-      required:
-      - id
-      properties:
-        id:
-          allOf:
-          - $ref: '#/components/schemas/ResourceIdsMatch'
-          - properties:
-              any:
-                maxItems: 100
-              all:
-                maxItems: 100
-    MetricsQuery:
-      type: object
-      required:
-      - where
-      - aggregations
-      additionalProperties: false
-      properties:
-        where:
-          $ref: '#/components/schemas/DocumentMatch'
-        exclude:
-          $ref: '#/components/schemas/ExcludeClause'
-        aggregations:
-          $ref: '#/components/schemas/AggregationsQuery'
-    AggregationQueryOptions:
-      type: object
-      additionalProperties: false
-      properties:
-        published-at:
-          $ref: '#/components/schemas/AggregationQueryDateIntervalOptions'
-          description: The date interval to aggregate on.
-        topic:
-          $ref: '#/components/schemas/AggregationQueryResourcesIncludeOption'
-          description: The topics to aggregate on.
-        iptc-media-topic:
-          deprecated: true
-          $ref: '#/components/schemas/AggregationQueryResourcesIncludeOption'
-        entity:
-          $ref: '#/components/schemas/AggregationQueryResourcesIncludeOption'
-          description: The entities to aggregate on.
-        source.country:
-          $ref: '#/components/schemas/AggregationQueryTermsIncludeOptions'
-          description: The countries to aggregate on.
-        language:
-          $ref: '#/components/schemas/AggregationQueryTermsIncludeOptions'
-          description: The languages to aggregate on.
-        source:
-          $ref: '#/components/schemas/AggregationQuerySourceOptions'
-          description: The sources to aggregate on.
-      default:
-        published-at:
-          interval: month
-        source.country:
-          size: 10
-        language:
-          size: 10
-        source:
-          size: 10
-    AllResourceIds:
-      type: object
-      additionalProperties: false
-      required:
-      - all
-      properties:
-        all:
-          $ref: '#/components/schemas/ResourceIds'
-    DocumentPosition:
-      type: string
-      enum:
-      - title
-      - title or summary
-      - full content
-      - quotes only
-    ExcludeClause:
-      type: object
-      additionalProperties: false
-      properties:
-        entities:
-          $ref: '#/components/schemas/EntitiesExclusion'
-        topics:
-          $ref: '#/components/schemas/TopicsExclusion'
-        source:
-          oneOf:
-          - $ref: '#/components/schemas/SourceExclusion'
-          - $ref: '#/components/schemas/CountryExclusion'
-        keywords:
-          $ref: '#/components/schemas/KeywordsExclusion'
-    TopicsExclusion:
-      type: object
-      additionalProperties: false
-      required:
-      - id
-      properties:
-        id:
-          allOf:
-          - $ref: '#/components/schemas/AnyResourceIds'
-          - properties:
-              any:
-                maxItems: 50
-    Date:
-      type: string
-      format: date
-      description: "A date based on the IETF RFC 3339 format (e.g. `2023-01-01`).\n    Note that a day is the span of time between 00:00:00 and 23:59:59 based on\n    the UTC timezone. You may prefer using the `date-time` option to match days\n    in a different timezone."
-      example: '2023-01-01'
-    ResourceIds:
-      type: array
-      items:
-        $ref: '#/components/schemas/ResourceId'
-    EqualsOrAnyResourceIdsMatch:
-      oneOf:
-      - $ref: '#/components/schemas/EqualsResourceId'
-      - $ref: '#/components/schemas/AnyResourceIds'
-    DocumentKeywordsMatch:
-      type: object
-      required:
-      - value
-      properties:
-        value:
-          allOf:
-          - $ref: '#/components/schemas/EqualsOrAnyOrAllTermsMatch'
-          - description: There is a 50 word limit for keywords across inclusion and exclusion. See the section **Keyword limitations** above for more details.
-        mentions:
-          $ref: '#/components/schemas/MentionPositionMatch'
-      description: Note that to use inclusion keywords, you will also need to include one of `entities`, `sources` or `topics` in your `where` clause.
-    MentionPositionMatch:
-      type: object
-      additionalProperties: false
-      required:
-      - position
-      properties:
-        position:
-          $ref: '#/components/schemas/DocumentPosition'
-      description: Note that mentions found in `summary` or `quotation` are a subset of the mentions found in the `full content`.
-    EqualsResourceId:
-      type: object
-      additionalProperties: false
-      required:
-      - eq
-      properties:
-        eq:
-          $ref: '#/components/schemas/ResourceId'
-    LanguageMatch:
-      oneOf:
-      - type: object
-        additionalProperties: false
-        required:
-        - eq
-        properties:
-          eq:
-            type: string
-            description: Language (e.g. `English`, `Chinese`, `Spanish`, `German`, `Japanese`...)
-      - type: object
-        name: AnyLanguage
-        additionalProperties: false
-        required:
-        - any
-        properties:
-          any:
-            type: array
-            items:
-              type: string
-            description: A list of languages (e.g. `English`, `Chinese`, `Spanish`, `German`, `Japanese`...)
-    DateOrDateTime:
-      oneOf:
-      - $ref: '#/components/schemas/Date'
-      - $ref: '#/components/schemas/DateTime'
-    Aggregation:
-      type: object
-      propertyNames:
-        oneOf:
-        - $ref: '#/components/schemas/AggregationDimensionKey'
-        - $ref: '#/components/schemas/AggregationMetricKey'
-    AggregationQueryTermsIncludeOptions:
-      type: object
-      additionalProperties: false
-      properties:
-        include:
-          type: array
-          minItems: 1
-          maxItems: 100
-          items:
-            type: string
-        size:
-          type: integer
-          minimum: 1
-          maximum: 100
-      default:
-        size: 10
-    DocumentEntitiesMatch:
-      type: object
-      additionalProperties: false
-      required:
-      - id
-      properties:
-        id:
-          allOf:
-          - $ref: '#/components/schemas/ResourceIdsMatch'
-          - properties:
-              any:
-                type: array
-                maxItems: 200
-              all:
-                type: array
-                maxItems: 200
-        salient-only:
-          type: boolean
-          description: Only return documents for which these entities are salient
-        mentions:
-          $ref: '#/components/schemas/MentionPositionMatch'
-    DateTimeRangeMatch:
-      type: object
-      properties:
-        gt:
-          $ref: '#/components/schemas/DateOrDateTime'
-        gte:
-          $ref: '#/components/schemas/DateOrDateTime'
-        lt:
-          $ref: '#/components/schemas/DateOrDateTime'
-        lte:
-          $ref: '#/components/schemas/DateOrDateTime'
-      additionalProperties: false
-      minProperties: 1
-      dependentSchemas:
-        gt:
-          not:
-            required:
-            - gte
-        gte:
-          not:
-            required:
-            - gt
-        lt:
-          not:
-            required:
-            - lte
-        lte:
-          not:
-            required:
-            - lt
-    AggregationQuerySourceOptions:
-      type: object
-      additionalProperties: false
-      properties:
-        size:
-          type: integer
-          minimum: 1
-          maximum: 100
-        include:
-          type: array
-          minItems: 1
-          maxItems: 100
-          items:
-            $ref: '#/components/schemas/ResourceId'
-      default:
-        size: 10
-    EntitiesExclusion:
-      type: object
-      additionalProperties: false
-      required:
-      - id
-      properties:
-        id:
-          allOf:
-          - $ref: '#/components/schemas/AnyResourceIds'
-          - properties:
-              any:
-                maxItems: 100
-    AggregationDimensionKey:
-      type: string
-      enum:
-      - published-at
-      - source
-      - source.country
-      - language
-      - topic
-      - iptc-media-topic
-      - entity
-      - entity.sentiment
-    EqualsMediaType:
-      type: object
-      additionalProperties: false
-      required:
-      - eq
-      properties:
-        eq:
-          $ref: '#/components/schemas/MediaType'
-    MediaTypeMatch:
-      oneOf:
-      - $ref: '#/components/schemas/EqualsMediaType'
-      - $ref: '#/components/schemas/AnyMediaType'
-    AnyTerms:
-      type: object
-      additionalProperties: false
-      required:
-      - any
-      properties:
-        any:
-          type: array
-          items:
-            type: string
-    CountryExclusion:
-      type: object
-      additionalProperties: false
-      required:
-      - country
-      properties:
-        country:
-          $ref: '#/components/schemas/AnyTerms'
-    SourceMatch:
-      type: object
-      additionalProperties: false
-      properties:
-        id:
-          allOf:
-          - $ref: '#/components/schemas/EqualsOrAnyResourceIdsMatch'
-          - properties:
-              any:
-                maxItems: 500
-        country:
-          $ref: '#/components/schemas/EqualsOrAnyTermsMatch'
-        region:
-          $ref: '#/components/schemas/EqualsOrAnyTermsMatch'
-        subregion:
-          $ref: '#/components/schemas/EqualsOrAnyTermsMatch'
-    KeywordsExclusion:
-      type: object
-      additionalProperties: false
-      required:
-      - value
-      properties:
-        value:
-          $ref: '#/components/schemas/AnyTerms'
-    MetricsResponse:
-      type: object
-      required:
-      - aggregations
-      additionalProperties: false
-      properties:
-        aggregations:
-          type: array
-          items:
-            $ref: '#/components/schemas/Aggregation'
-    EqualsTerm:
-      type: object
-      additionalProperties: false
-      required:
-      - eq
-      properties:
-        eq:
-          type: string
-    AnyResourceIds:
-      type: object
-      additionalProperties: false
-      required:
-      - any
-      properties:
-        any:
-          $ref: '#/components/schemas/ResourceIds'
-    CategoriesMatch:
-      type: object
-      deprecated: true
-      additionalProperties: false
-      required:
-      - id
-      properties:
-        id:
-          allOf:
-          - $ref: '#/components/schemas/ResourceIdsMatch'
-          - properties:
-              any:
-                maxItems: 100
-              all:
-                maxItems: 100
   examples:
     entity-sentiment-metrics-request:
       summary: Week-on-week sentiment trend by country

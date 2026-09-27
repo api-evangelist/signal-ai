@@ -74,11 +74,32 @@ paths:
                 $ref: '#/components/schemas/EntityResponse'
 components:
   schemas:
+    EntitiesResponse:
+      type: object
+      required:
+      - entities
+      properties:
+        entities:
+          type: array
+          items:
+            $ref: '#/components/schemas/Entity'
+        next-cursor:
+          $ref: '#/components/schemas/Base64String'
     ResourceId:
       type: string
       format: uuid
       pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
       example: bcd2d868-ed38-4382-b94a-622a30fc3215
+    EntityType:
+      type: string
+      enum:
+      - person
+      - organisation
+      - location
+      - substance
+      - disease
+      - product
+      - regulation
     EntityResponse:
       type: object
       required:
@@ -99,27 +120,6 @@ components:
           $ref: '#/components/schemas/EntityType'
         name:
           type: string
-    EntitiesResponse:
-      type: object
-      required:
-      - entities
-      properties:
-        entities:
-          type: array
-          items:
-            $ref: '#/components/schemas/Entity'
-        next-cursor:
-          $ref: '#/components/schemas/Base64String'
-    EntityType:
-      type: string
-      enum:
-      - person
-      - organisation
-      - location
-      - substance
-      - disease
-      - product
-      - regulation
     Base64String:
       type: string
       pattern: ^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$

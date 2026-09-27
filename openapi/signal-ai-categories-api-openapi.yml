@@ -50,21 +50,6 @@ paths:
                 $ref: '#/components/schemas/CategoryResponse'
 components:
   schemas:
-    Category:
-      type: object
-      required:
-      - id
-      - name
-      properties:
-        id:
-          $ref: '#/components/schemas/ResourceId'
-        name:
-          type: string
-    ResourceId:
-      type: string
-      format: uuid
-      pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
-      example: bcd2d868-ed38-4382-b94a-622a30fc3215
     CategoriesResponse:
       type: object
       deprecated: true
@@ -77,6 +62,31 @@ components:
             allOf:
             - $ref: '#/components/schemas/Category'
             - $ref: '#/components/schemas/CategoryDetails'
+    ResourceId:
+      type: string
+      format: uuid
+      pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+      example: bcd2d868-ed38-4382-b94a-622a30fc3215
+    CategoryResponse:
+      type: object
+      deprecated: true
+      required:
+      - category
+      properties:
+        category:
+          allOf:
+          - $ref: '#/components/schemas/Category'
+          - $ref: '#/components/schemas/CategoryDetails'
+    Category:
+      type: object
+      required:
+      - id
+      - name
+      properties:
+        id:
+          $ref: '#/components/schemas/ResourceId'
+        name:
+          type: string
     CategoryDetails:
       type: object
       required:
@@ -99,16 +109,6 @@ components:
         unavailable:
           type: boolean
           description: If provided and true, the Signal platform does not currently recognise this category
-    CategoryResponse:
-      type: object
-      deprecated: true
-      required:
-      - category
-      properties:
-        category:
-          allOf:
-          - $ref: '#/components/schemas/Category'
-          - $ref: '#/components/schemas/CategoryDetails'
   securitySchemes:
     OAuth2:
       type: oauth2
