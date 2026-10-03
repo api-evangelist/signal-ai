@@ -66,29 +66,6 @@ paths:
                   $ref: '#/components/examples/post-affinity-response'
 components:
   schemas:
-    YearMonth:
-      type: string
-      pattern: ^20[0-9]{2}-(0[1-9]|1[0-2])$
-      description: A year and month encoded as `YYYY-MM` (e.g. `2023-01`)
-      example: 2023-01
-    ConceptIdsObject:
-      type: object
-      required:
-      - ids
-      additionalProperties: false
-      properties:
-        ids:
-          type: array
-          items:
-            $ref: '#/components/schemas/ResourceId'
-          uniqueItems: true
-          minItems: 1
-          maxItems: 100
-    ResourceId:
-      type: string
-      format: uuid
-      pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
-      example: bcd2d868-ed38-4382-b94a-622a30fc3215
     ConceptTypeEnum:
       type: string
       enum:
@@ -101,69 +78,6 @@ components:
       - entity/product
       - entity/regulation
       - topic
-    IntervalType:
-      type: string
-      enum:
-      - month
-    RelationshipType:
-      type: string
-      enum:
-      - proximity
-    PostAffinityResponse:
-      type: object
-      required:
-      - source-concept
-      - results
-      additionalProperties: false
-      properties:
-        source-concept:
-          $ref: '#/components/schemas/Concept'
-        results:
-          type: array
-          items:
-            type: object
-            required:
-            - relationship
-            - target-concept
-            additionalProperties: false
-            properties:
-              relationship:
-                type: object
-                required:
-                - date
-                - type
-                - proximity-score
-                - sentiment-score
-                additionalProperties: false
-                properties:
-                  date:
-                    $ref: '#/components/schemas/YearMonth'
-                  type:
-                    $ref: '#/components/schemas/RelationshipType'
-                  proximity-score:
-                    type: number
-                    minimum: 0.0
-                    maximum: 1.0
-                  sentiment-score:
-                    type: number
-                    minimum: -1.0
-                    maximum: 1.0
-              target-concept:
-                $ref: '#/components/schemas/Concept'
-    Concept:
-      type: object
-      additionalProperties: false
-      required:
-      - id
-      - type
-      - name
-      properties:
-        id:
-          $ref: '#/components/schemas/ResourceId'
-        type:
-          $ref: '#/components/schemas/ConceptTypeEnum'
-        name:
-          type: string
     PostAffinityQuery:
       type: object
       required:
@@ -223,22 +137,93 @@ components:
                 minItems: 1
               exclude:
                 $ref: '#/components/schemas/ConceptIdsObject'
-  examples:
-    post-affinity-request:
-      summary: Affinity request
-      value:
-        relationship:
-          type: proximity
-          date:
-            start: 2022-01
-            end: 2022-02
-          interval: month
-          limit-per-interval: 10
+    PostAffinityResponse:
+      type: object
+      required:
+      - source-concept
+      - results
+      additionalProperties: false
+      properties:
         source-concept:
-          id: d6341968-83df-441c-a869-fa7ae9c22c73
-        target-concepts:
-          ids:
-          - fc31abf2-7b11-4ed5-a7d2-35266057c0dd
+          $ref: '#/components/schemas/Concept'
+        results:
+          type: array
+          items:
+            type: object
+            required:
+            - relationship
+            - target-concept
+            additionalProperties: false
+            properties:
+              relationship:
+                type: object
+                required:
+                - date
+                - type
+                - proximity-score
+                - sentiment-score
+                additionalProperties: false
+                properties:
+                  date:
+                    $ref: '#/components/schemas/YearMonth'
+                  type:
+                    $ref: '#/components/schemas/RelationshipType'
+                  proximity-score:
+                    type: number
+                    minimum: 0.0
+                    maximum: 1.0
+                  sentiment-score:
+                    type: number
+                    minimum: -1.0
+                    maximum: 1.0
+              target-concept:
+                $ref: '#/components/schemas/Concept'
+    Concept:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - type
+      - name
+      properties:
+        id:
+          $ref: '#/components/schemas/ResourceId'
+        type:
+          $ref: '#/components/schemas/ConceptTypeEnum'
+        name:
+          type: string
+    ResourceId:
+      type: string
+      format: uuid
+      pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+      example: bcd2d868-ed38-4382-b94a-622a30fc3215
+    YearMonth:
+      type: string
+      pattern: ^20[0-9]{2}-(0[1-9]|1[0-2])$
+      description: A year and month encoded as `YYYY-MM` (e.g. `2023-01`)
+      example: 2023-01
+    IntervalType:
+      type: string
+      enum:
+      - month
+    RelationshipType:
+      type: string
+      enum:
+      - proximity
+    ConceptIdsObject:
+      type: object
+      required:
+      - ids
+      additionalProperties: false
+      properties:
+        ids:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceId'
+          uniqueItems: true
+          minItems: 1
+          maxItems: 100
+  examples:
     post-affinity-response:
       summary: Affinity response
       value:
@@ -265,6 +250,21 @@ components:
             id: fc31abf2-7b11-4ed5-a7d2-35266057c0dd
             name: Innovation
             type: topic
+    post-affinity-request:
+      summary: Affinity request
+      value:
+        relationship:
+          type: proximity
+          date:
+            start: 2022-01
+            end: 2022-02
+          interval: month
+          limit-per-interval: 10
+        source-concept:
+          id: d6341968-83df-441c-a869-fa7ae9c22c73
+        target-concepts:
+          ids:
+          - fc31abf2-7b11-4ed5-a7d2-35266057c0dd
   securitySchemes:
     OAuth2:
       type: oauth2

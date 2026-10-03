@@ -98,14 +98,18 @@ paths:
                 $ref: '#/components/schemas/SourceResponse'
 components:
   schemas:
-    Subregion:
-      type: array
-      items:
-        $ref: '#/components/schemas/Country'
-    Region:
+    NameString:
+      type: string
+      pattern: ^[a-zA-Z-., ]+$
+    SourceLocationsResponse:
       type: object
-      additionalProperties:
-        $ref: '#/components/schemas/Subregion'
+      required:
+      - source-locations
+      properties:
+        source-locations:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Region'
     Source:
       type: object
       required:
@@ -135,6 +139,8 @@ components:
       properties:
         source:
           $ref: '#/components/schemas/Source'
+    Country:
+      type: string
     ResourceId:
       type: string
       format: uuid
@@ -149,20 +155,14 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Source'
-    SourceLocationsResponse:
+    Subregion:
+      type: array
+      items:
+        $ref: '#/components/schemas/Country'
+    Region:
       type: object
-      required:
-      - source-locations
-      properties:
-        source-locations:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/Region'
-    NameString:
-      type: string
-      pattern: ^[a-zA-Z-., ]+$
-    Country:
-      type: string
+      additionalProperties:
+        $ref: '#/components/schemas/Subregion'
   examples:
     get-source-locations-response:
       value:

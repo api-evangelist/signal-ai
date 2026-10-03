@@ -68,18 +68,6 @@ paths:
                 $ref: '#/components/schemas/TopicsResponse'
 components:
   schemas:
-    TopicResponse:
-      type: object
-      required:
-      - topic
-      properties:
-        topic:
-          $ref: '#/components/schemas/Topic'
-    ResourceId:
-      type: string
-      format: uuid
-      pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
-      example: bcd2d868-ed38-4382-b94a-622a30fc3215
     PartialTopic:
       type: object
       required:
@@ -90,6 +78,20 @@ components:
           $ref: '#/components/schemas/ResourceId'
         name:
           type: string
+    TopicsResponse:
+      type: object
+      required:
+      - topics
+      properties:
+        topics:
+          type: array
+          items:
+            $ref: '#/components/schemas/Topic'
+    ResourceId:
+      type: string
+      format: uuid
+      pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+      example: bcd2d868-ed38-4382-b94a-622a30fc3215
     Topic:
       type: object
       allOf:
@@ -103,15 +105,13 @@ components:
         id: aaca73a5-f4d6-4e40-85c4-8258d4bc63a8
         name: 3D Printing
         description: 3D Printing is a manufacturing process that ...
-    TopicsResponse:
+    TopicResponse:
       type: object
       required:
-      - topics
+      - topic
       properties:
-        topics:
-          type: array
-          items:
-            $ref: '#/components/schemas/Topic'
+        topic:
+          $ref: '#/components/schemas/Topic'
   securitySchemes:
     OAuth2:
       type: oauth2
