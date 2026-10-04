@@ -190,70 +190,16 @@ paths:
                 $ref: '#/components/schemas/RiskEventScoreResponse'
 components:
   schemas:
-    Entity:
-      type: object
-      required:
-      - id
-      - name
-      - type
+    RiskScoreBy:
       properties:
-        id:
-          $ref: '#/components/schemas/ResourceId'
-        type:
-          $ref: '#/components/schemas/EntityType'
-        name:
-          type: string
-    RiskEventMatch:
-      type: object
-      additionalProperties: false
-      properties:
-        first-reported-at:
-          $ref: '#/components/schemas/DateRangeMatch'
-        entities:
-          $ref: '#/components/schemas/RiskEventEntitiesMatch'
-        event-definitions:
-          $ref: '#/components/schemas/RiskEventDefinitionsMatch'
-    RiskEventDefinition:
-      type: object
-      required:
-      - id
-      - name
-      additionalProperties: false
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-    Date:
-      type: string
-      format: date
-      description: "A date based on the IETF RFC 3339 format (e.g. `2023-01-01`).\n    Note that a day is the span of time between 00:00:00 and 23:59:59 based on\n    the UTC timezone. You may prefer using the `date-time` option to match days\n    in a different timezone."
-      example: '2023-01-01'
-    RiskEventScoreQuery:
-      type: object
-      required:
-      - where
-      - score-by
-      additionalProperties: false
-      properties:
-        where:
-          $ref: '#/components/schemas/RiskScoreMatch'
-        score-by:
-          $ref: '#/components/schemas/RiskScoreBy'
-    RiskEventSearchResponse:
-      properties:
-        events:
-          items:
-            $ref: '#/components/schemas/RiskEvent'
+        entity-ids:
           type: array
-          maxItems: 100
-        next-cursor:
-          type: string
-          description: Use the `next-cursor` field from a previous response to get the next page of results (see [Pagination](#section/Pagination))
-      required:
-      - events
+          items:
+            $ref: '#/components/schemas/ResourceId'
+        pillars:
+          type: array
+          items:
+            $ref: '#/components/schemas/RiskPillar'
       type: object
       additionalProperties: false
     DateRangeMatch:
@@ -265,6 +211,37 @@ components:
           $ref: '#/components/schemas/Date'
       additionalProperties: false
       minProperties: 1
+    EntityType:
+      type: string
+      enum:
+      - person
+      - organisation
+      - location
+      - substance
+      - disease
+      - product
+      - regulation
+    ResourceIds:
+      type: array
+      items:
+        $ref: '#/components/schemas/ResourceId'
+    RiskEventSearchQuery:
+      type: object
+      required:
+      - where
+      additionalProperties: false
+      properties:
+        where:
+          $ref: '#/components/schemas/RiskEventMatch'
+        size:
+          type: number
+          minimum: 1
+          maximum: 100
+          default: 20
+          description: Set the number of events to return per page
+        from-cursor:
+          type: string
+          description: Use the `next-cursor` field from a previous response to get the next page of results (see [Pagination](#section/Pagination))
     RiskEventDefinitionsMatch:
       type: object
       additionalProperties: false
@@ -279,27 +256,41 @@ components:
                 type: array
                 minItems: 1
                 maxItems: 200
-    RiskScoreMatch:
+    RiskEventScoreQuery:
+      type: object
+      required:
+      - where
+      - score-by
+      additionalProperties: false
+      properties:
+        where:
+          $ref: '#/components/schemas/RiskScoreMatch'
+        score-by:
+          $ref: '#/components/schemas/RiskScoreBy'
+    Date:
+      type: string
+      format: date
+      description: "A date based on the IETF RFC 3339 format (e.g. `2023-01-01`).\n    Note that a day is the span of time between 00:00:00 and 23:59:59 based on\n    the UTC timezone. You may prefer using the `date-time` option to match days\n    in a different timezone."
+      example: '2023-01-01'
+    RiskEventSearchResponse:
+      properties:
+        events:
+          items:
+            $ref: '#/components/schemas/RiskEvent'
+          type: array
+          maxItems: 100
+        next-cursor:
+          type: string
+          description: Use the `next-cursor` field from a previous response to get the next page of results (see [Pagination](#section/Pagination))
+      required:
+      - events
       type: object
       additionalProperties: false
-      required:
-      - entities
-      - first-reported-at
-      properties:
-        first-reported-at:
-          $ref: '#/components/schemas/DateRangeMatch'
-        entities:
-          $ref: '#/components/schemas/RiskEventEntitiesMatch'
-    EntityType:
+    ResourceId:
       type: string
-      enum:
-      - person
-      - organisation
-      - location
-      - substance
-      - disease
-      - product
-      - regulation
+      format: uuid
+      pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+      example: bcd2d868-ed38-4382-b94a-622a30fc3215
     RiskEventScoreResponse:
       type: object
       required:
@@ -310,46 +301,89 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/RiskScore'
-    RiskEventDefinitionResponse:
+    AnyResourceIds:
+      type: object
+      additionalProperties: false
+      required:
+      - any
+      properties:
+        any:
+          $ref: '#/components/schemas/ResourceIds'
+    Entity:
       type: object
       required:
-      - event-definitions
+      - id
+      - name
+      - type
+      properties:
+        id:
+          $ref: '#/components/schemas/ResourceId'
+        type:
+          $ref: '#/components/schemas/EntityType'
+        name:
+          type: string
+    RiskEventDefinition:
+      type: object
+      required:
+      - id
+      - name
       additionalProperties: false
       properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+    RiskPillar:
+      properties:
+        name:
+          type: string
+        event-definition-ids:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceId'
+      type: object
+      required:
+      - name
+      - event-definition-ids
+      additionalProperties: false
+    RiskScore:
+      properties:
+        name:
+          type: string
         event-definitions:
           type: array
           items:
             $ref: '#/components/schemas/RiskEventDefinition'
-    RiskScoreBy:
-      properties:
-        entity-ids:
-          type: array
-          items:
-            $ref: '#/components/schemas/ResourceId'
-        pillars:
-          type: array
-          items:
-            $ref: '#/components/schemas/RiskPillar'
-      type: object
-      additionalProperties: false
-    ResourceId:
-      type: string
-      format: uuid
-      pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
-      example: bcd2d868-ed38-4382-b94a-622a30fc3215
-    RiskEventDocument:
-      type: object
+        entity:
+          $ref: '#/components/schemas/Entity'
+        document-count:
+          type: number
+        event-count:
+          type: number
+        likelihood:
+          type: number
+          minimum: 1
+          maximum: 5
+        impact:
+          type: number
+          minimum: 1
+          maximum: 5
+        score:
+          type: number
+          minimum: 1
+          maximum: 25
       required:
-      - id
-      - title
+      - name
+      - event-definitions
+      - document-count
+      - event-count
+      - likelihood
+      - impact
+      - score
+      type: object
       additionalProperties: false
-      properties:
-        id:
-          $ref: '#/components/schemas/ResourceId'
-        title:
-          type: string
-        signal-url:
-          type: string
     RiskEventEntitiesMatch:
       type: object
       additionalProperties: false
@@ -364,6 +398,26 @@ components:
                 type: array
                 minItems: 1
                 maxItems: 20
+    RiskEventMatch:
+      type: object
+      additionalProperties: false
+      properties:
+        first-reported-at:
+          $ref: '#/components/schemas/DateRangeMatch'
+        entities:
+          $ref: '#/components/schemas/RiskEventEntitiesMatch'
+        event-definitions:
+          $ref: '#/components/schemas/RiskEventDefinitionsMatch'
+    RiskEventDefinitionResponse:
+      type: object
+      required:
+      - event-definitions
+      additionalProperties: false
+      properties:
+        event-definitions:
+          type: array
+          items:
+            $ref: '#/components/schemas/RiskEventDefinition'
     RiskEvent:
       properties:
         id:
@@ -409,84 +463,30 @@ components:
       - documents
       type: object
       additionalProperties: false
-    AnyResourceIds:
+    RiskScoreMatch:
       type: object
       additionalProperties: false
       required:
-      - any
+      - entities
+      - first-reported-at
       properties:
-        any:
-          $ref: '#/components/schemas/ResourceIds'
-    RiskPillar:
+        first-reported-at:
+          $ref: '#/components/schemas/DateRangeMatch'
+        entities:
+          $ref: '#/components/schemas/RiskEventEntitiesMatch'
+    RiskEventDocument:
+      type: object
+      required:
+      - id
+      - title
+      additionalProperties: false
       properties:
-        name:
+        id:
+          $ref: '#/components/schemas/ResourceId'
+        title:
           type: string
-        event-definition-ids:
-          type: array
-          items:
-            $ref: '#/components/schemas/ResourceId'
-      type: object
-      required:
-      - name
-      - event-definition-ids
-      additionalProperties: false
-    RiskEventSearchQuery:
-      type: object
-      required:
-      - where
-      additionalProperties: false
-      properties:
-        where:
-          $ref: '#/components/schemas/RiskEventMatch'
-        size:
-          type: number
-          minimum: 1
-          maximum: 100
-          default: 20
-          description: Set the number of events to return per page
-        from-cursor:
+        signal-url:
           type: string
-          description: Use the `next-cursor` field from a previous response to get the next page of results (see [Pagination](#section/Pagination))
-    RiskScore:
-      properties:
-        name:
-          type: string
-        event-definitions:
-          type: array
-          items:
-            $ref: '#/components/schemas/RiskEventDefinition'
-        entity:
-          $ref: '#/components/schemas/Entity'
-        document-count:
-          type: number
-        event-count:
-          type: number
-        likelihood:
-          type: number
-          minimum: 1
-          maximum: 5
-        impact:
-          type: number
-          minimum: 1
-          maximum: 5
-        score:
-          type: number
-          minimum: 1
-          maximum: 25
-      required:
-      - name
-      - event-definitions
-      - document-count
-      - event-count
-      - likelihood
-      - impact
-      - score
-      type: object
-      additionalProperties: false
-    ResourceIds:
-      type: array
-      items:
-        $ref: '#/components/schemas/ResourceId'
   securitySchemes:
     OAuth2:
       type: oauth2

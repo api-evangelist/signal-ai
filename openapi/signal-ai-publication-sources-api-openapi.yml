@@ -98,18 +98,28 @@ paths:
                 $ref: '#/components/schemas/SourceResponse'
 components:
   schemas:
-    NameString:
+    Region:
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/Subregion'
+    Country:
       type: string
-      pattern: ^[a-zA-Z-., ]+$
-    SourceLocationsResponse:
+    SourcesResponse:
       type: object
       required:
-      - source-locations
+      - sources
       properties:
-        source-locations:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/Region'
+        sources:
+          type: array
+          items:
+            $ref: '#/components/schemas/Source'
+    SourceResponse:
+      type: object
+      required:
+      - source
+      properties:
+        source:
+          $ref: '#/components/schemas/Source'
     Source:
       type: object
       required:
@@ -132,37 +142,27 @@ components:
         country: United Kingdom
         subregion: Northern Europe
         region: Europe
-    SourceResponse:
-      type: object
-      required:
-      - source
-      properties:
-        source:
-          $ref: '#/components/schemas/Source'
-    Country:
-      type: string
     ResourceId:
       type: string
       format: uuid
       pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
       example: bcd2d868-ed38-4382-b94a-622a30fc3215
-    SourcesResponse:
-      type: object
-      required:
-      - sources
-      properties:
-        sources:
-          type: array
-          items:
-            $ref: '#/components/schemas/Source'
     Subregion:
       type: array
       items:
         $ref: '#/components/schemas/Country'
-    Region:
+    SourceLocationsResponse:
       type: object
-      additionalProperties:
-        $ref: '#/components/schemas/Subregion'
+      required:
+      - source-locations
+      properties:
+        source-locations:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Region'
+    NameString:
+      type: string
+      pattern: ^[a-zA-Z-., ]+$
   examples:
     get-source-locations-response:
       value:

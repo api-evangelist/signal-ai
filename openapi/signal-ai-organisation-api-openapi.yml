@@ -38,6 +38,16 @@ components:
       format: uuid
       pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
       example: bcd2d868-ed38-4382-b94a-622a30fc3215
+    UsersResponse:
+      type: object
+      required:
+      - users
+      additionalProperties: false
+      properties:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
     User:
       type: object
       required:
@@ -68,16 +78,6 @@ components:
           type: boolean
         created-at:
           type: string
-    UsersResponse:
-      type: object
-      required:
-      - users
-      additionalProperties: false
-      properties:
-        users:
-          type: array
-          items:
-            $ref: '#/components/schemas/User'
   securitySchemes:
     OAuth2:
       type: oauth2

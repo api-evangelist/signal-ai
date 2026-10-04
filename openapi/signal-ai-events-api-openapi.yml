@@ -66,6 +66,372 @@ paths:
                 events-response:
                   $ref: '#/components/examples/events-response-example'
 components:
+  schemas:
+    EventEntitiesMatch:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      properties:
+        id:
+          allOf:
+          - $ref: '#/components/schemas/AnyOrAllResourceIdsMatch'
+          - properties:
+              any:
+                type: array
+                maxItems: 200
+              all:
+                type: array
+                maxItems: 200
+    EventSearchResponse:
+      type: object
+      required:
+      - events
+      - event-hash-expiry
+      - stats
+      additionalProperties: false
+      properties:
+        events:
+          type: array
+          items:
+            unevaluatedProperties: false
+            $ref: '#/components/schemas/Event'
+        event-hash-expiry:
+          type: string
+          format: date-time
+          description: When the event hashes will expire (note that it could still be available after this time).
+        next-cursor:
+          oneOf:
+          - $ref: '#/components/schemas/Base64String'
+          - type: 'null'
+          description: Use the value of this field as the input to `from-cursor` in a query to paginate through the results (see [Pagination](#section/Pagination)).
+        stats:
+          type: object
+          description: The number of events matched across our entire data set. We can only provide an accurate figure up to 10000. Anything above that is indicated with `gte`.
+          required:
+          - total
+          properties:
+            total:
+              type: array
+              prefixItems:
+              - enum:
+                - eq
+                - gte
+              - type: integer
+    EntityType:
+      type: string
+      enum:
+      - person
+      - organisation
+      - location
+      - substance
+      - disease
+      - product
+      - regulation
+    Base64String:
+      type: string
+      pattern: ^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$
+      example: RjQ2RTRBQUEtQTNGRi00MEI3LUE1NEYtNTA0NEQxMjc5NkU3
+    ResourceIds:
+      type: array
+      items:
+        $ref: '#/components/schemas/ResourceId'
+    EventSearchQuery:
+      type: object
+      required:
+      - where
+      additionalProperties: false
+      properties:
+        where:
+          $ref: '#/components/schemas/EventMatch'
+        exclude:
+          $ref: '#/components/schemas/EventExclude'
+        size:
+          type: integer
+          default: 10
+          minimum: 0
+          maximum: 1000
+        from-cursor:
+          $ref: '#/components/schemas/Base64String'
+          description: Use this field to paginate through the results (see [Pagination](#section/Pagination)).
+    PartialTopic:
+      type: object
+      required:
+      - id
+      - name
+      properties:
+        id:
+          $ref: '#/components/schemas/ResourceId'
+        name:
+          type: string
+    EventExclude:
+      type: object
+      additionalProperties: false
+      properties:
+        entities:
+          type: object
+          additionalProperties: false
+          required:
+          - id
+          properties:
+            id:
+              allOf:
+              - $ref: '#/components/schemas/AnyResourceIds'
+              - properties:
+                  any:
+                    maxItems: 100
+        topics:
+          type: object
+          additionalProperties: false
+          required:
+          - id
+          properties:
+            id:
+              allOf:
+              - $ref: '#/components/schemas/AnyResourceIds'
+              - properties:
+                  any:
+                    maxItems: 50
+        labels:
+          type: object
+          additionalProperties: false
+          properties:
+            any:
+              type: array
+              items:
+                type: string
+              maxItems: 100
+        sources:
+          type: object
+          additionalProperties: false
+          required:
+          - id
+          properties:
+            id:
+              allOf:
+              - $ref: '#/components/schemas/AnyResourceIds'
+              - properties:
+                  any:
+                    maxItems: 100
+    AnyOrAllResourceIdsMatch:
+      oneOf:
+      - $ref: '#/components/schemas/AnyResourceIds'
+      - $ref: '#/components/schemas/AllResourceIds'
+    Event:
+      type: object
+      required:
+      - hash
+      - date
+      - story-count-global
+      - document-count-entitlements
+      - document-count-global
+      - labels
+      - entities
+      - topics
+      - story-ids
+      properties:
+        labels:
+          type: array
+          items:
+            type: string
+          description: The most descriptive words or phrases that appear in the documents in the event.
+        date:
+          $ref: '#/components/schemas/Date'
+        document-count-entitlements:
+          type: integer
+          description: The number of documents that mentioned this event based on your user permissions.
+        hash:
+          $ref: '#/components/schemas/EventHash'
+        story-count-global:
+          type: integer
+          description: The number of stories that mentioned this event across Signal's global data set.
+        story-ids:
+          type: array
+          description: Ordered by centrality - how well the story represents the event in question. You can use these ids in the [Search API](#tag/Content-Search/operation/search-documents) to get headlines best describing the event.
+          items:
+            $ref: '#/components/schemas/ResourceId'
+        document-count-global:
+          type: integer
+          description: The number of documents that mentioned this event across Signal's global data set.
+        entities:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventEntity'
+        topics:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventTopic'
+        source-count-global:
+          oneOf:
+          - type: integer
+          - type: 'null'
+          description: The number of sources that mentioned this event across Signal's global data set.
+    Date:
+      type: string
+      format: date
+      description: "A date based on the IETF RFC 3339 format (e.g. `2023-01-01`).\n    Note that a day is the span of time between 00:00:00 and 23:59:59 based on\n    the UTC timezone. You may prefer using the `date-time` option to match days\n    in a different timezone."
+      example: '2023-01-01'
+    EventHashResponse:
+      type: object
+      required:
+      - event
+      additionalProperties: false
+      properties:
+        event:
+          type: object
+          unevaluatedProperties: false
+          allOf:
+          - $ref: '#/components/schemas/Event'
+          - required:
+            - source-ids
+            properties:
+              source-ids:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ResourceId'
+                description: The sources that mention this event.
+    ResourceId:
+      type: string
+      format: uuid
+      pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+      example: bcd2d868-ed38-4382-b94a-622a30fc3215
+    AnyResourceIds:
+      type: object
+      additionalProperties: false
+      required:
+      - any
+      properties:
+        any:
+          $ref: '#/components/schemas/ResourceIds'
+    EventEntity:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/Entity'
+      - properties:
+          story-count:
+            type: integer
+          prominence-score:
+            type: number
+            description: The number of stories mentioning the concept divided by the story count for the event. For example, if half the stories in the event mention an entity then the prominence would be 0.5.
+    EventMatch:
+      type: object
+      additionalProperties: false
+      properties:
+        date:
+          type: object
+          properties:
+            gt:
+              $ref: '#/components/schemas/Date'
+            gte:
+              $ref: '#/components/schemas/Date'
+            lt:
+              $ref: '#/components/schemas/Date'
+            lte:
+              $ref: '#/components/schemas/Date'
+          additionalProperties: false
+          minProperties: 1
+          dependentSchemas:
+            gt:
+              not:
+                required:
+                - gte
+            gte:
+              not:
+                required:
+                - gt
+            lt:
+              not:
+                required:
+                - lte
+            lte:
+              not:
+                required:
+                - lt
+        topics:
+          $ref: '#/components/schemas/EventTopicsMatch'
+        entities:
+          $ref: '#/components/schemas/EventEntitiesMatch'
+        labels:
+          type: object
+          description: Filter on specific words or phrases. A label can contain a maximum of 6 words.
+          oneOf:
+          - additionalProperties: false
+            properties:
+              any:
+                type: array
+                items:
+                  type: string
+                maxItems: 100
+          - additionalProperties: false
+            properties:
+              all:
+                type: array
+                items:
+                  type: string
+                maxItems: 100
+        sources:
+          type: object
+          additionalProperties: false
+          required:
+          - id
+          description: If the user does not have access to any of the sources specified, those ids will be excluded while fetching the events
+          properties:
+            id:
+              allOf:
+              - $ref: '#/components/schemas/AnyOrAllResourceIdsMatch'
+              - properties:
+                  any:
+                    maxItems: 100
+                  all:
+                    maxItems: 100
+    Entity:
+      type: object
+      required:
+      - id
+      - name
+      - type
+      properties:
+        id:
+          $ref: '#/components/schemas/ResourceId'
+        type:
+          $ref: '#/components/schemas/EntityType'
+        name:
+          type: string
+    AllResourceIds:
+      type: object
+      additionalProperties: false
+      required:
+      - all
+      properties:
+        all:
+          $ref: '#/components/schemas/ResourceIds'
+    EventTopic:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/PartialTopic'
+      - properties:
+          story-count:
+            type: integer
+          prominence-score:
+            type: number
+            description: The number of stories mentioning the concept divided by the story count for the event. For example, if half the stories in the event mention a topic then the prominence would be 0.5.
+    EventTopicsMatch:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      properties:
+        id:
+          allOf:
+          - $ref: '#/components/schemas/AnyOrAllResourceIdsMatch'
+          - properties:
+              any:
+                maxItems: 100
+              all:
+                maxItems: 100
+    EventHash:
+      type: string
+      pattern: '[0-9a-fA-F=-]+'
   examples:
     event-hash-response-example:
       value:
@@ -213,372 +579,6 @@ components:
               any:
               - aee5dfa5-cf7e-4bcd-80c3-79b0125effc8
         size: 10
-  schemas:
-    Entity:
-      type: object
-      required:
-      - id
-      - name
-      - type
-      properties:
-        id:
-          $ref: '#/components/schemas/ResourceId'
-        type:
-          $ref: '#/components/schemas/EntityType'
-        name:
-          type: string
-    AllResourceIds:
-      type: object
-      additionalProperties: false
-      required:
-      - all
-      properties:
-        all:
-          $ref: '#/components/schemas/ResourceIds'
-    EventHash:
-      type: string
-      pattern: '[0-9a-fA-F=-]+'
-    PartialTopic:
-      type: object
-      required:
-      - id
-      - name
-      properties:
-        id:
-          $ref: '#/components/schemas/ResourceId'
-        name:
-          type: string
-    EventSearchResponse:
-      type: object
-      required:
-      - events
-      - event-hash-expiry
-      - stats
-      additionalProperties: false
-      properties:
-        events:
-          type: array
-          items:
-            unevaluatedProperties: false
-            $ref: '#/components/schemas/Event'
-        event-hash-expiry:
-          type: string
-          format: date-time
-          description: When the event hashes will expire (note that it could still be available after this time).
-        next-cursor:
-          oneOf:
-          - $ref: '#/components/schemas/Base64String'
-          - type: 'null'
-          description: Use the value of this field as the input to `from-cursor` in a query to paginate through the results (see [Pagination](#section/Pagination)).
-        stats:
-          type: object
-          description: The number of events matched across our entire data set. We can only provide an accurate figure up to 10000. Anything above that is indicated with `gte`.
-          required:
-          - total
-          properties:
-            total:
-              type: array
-              prefixItems:
-              - enum:
-                - eq
-                - gte
-              - type: integer
-    Date:
-      type: string
-      format: date
-      description: "A date based on the IETF RFC 3339 format (e.g. `2023-01-01`).\n    Note that a day is the span of time between 00:00:00 and 23:59:59 based on\n    the UTC timezone. You may prefer using the `date-time` option to match days\n    in a different timezone."
-      example: '2023-01-01'
-    AnyOrAllResourceIdsMatch:
-      oneOf:
-      - $ref: '#/components/schemas/AnyResourceIds'
-      - $ref: '#/components/schemas/AllResourceIds'
-    Base64String:
-      type: string
-      pattern: ^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$
-      example: RjQ2RTRBQUEtQTNGRi00MEI3LUE1NEYtNTA0NEQxMjc5NkU3
-    EventSearchQuery:
-      type: object
-      required:
-      - where
-      additionalProperties: false
-      properties:
-        where:
-          $ref: '#/components/schemas/EventMatch'
-        exclude:
-          $ref: '#/components/schemas/EventExclude'
-        size:
-          type: integer
-          default: 10
-          minimum: 0
-          maximum: 1000
-        from-cursor:
-          $ref: '#/components/schemas/Base64String'
-          description: Use this field to paginate through the results (see [Pagination](#section/Pagination)).
-    EntityType:
-      type: string
-      enum:
-      - person
-      - organisation
-      - location
-      - substance
-      - disease
-      - product
-      - regulation
-    EventExclude:
-      type: object
-      additionalProperties: false
-      properties:
-        entities:
-          type: object
-          additionalProperties: false
-          required:
-          - id
-          properties:
-            id:
-              allOf:
-              - $ref: '#/components/schemas/AnyResourceIds'
-              - properties:
-                  any:
-                    maxItems: 100
-        topics:
-          type: object
-          additionalProperties: false
-          required:
-          - id
-          properties:
-            id:
-              allOf:
-              - $ref: '#/components/schemas/AnyResourceIds'
-              - properties:
-                  any:
-                    maxItems: 50
-        labels:
-          type: object
-          additionalProperties: false
-          properties:
-            any:
-              type: array
-              items:
-                type: string
-              maxItems: 100
-        sources:
-          type: object
-          additionalProperties: false
-          required:
-          - id
-          properties:
-            id:
-              allOf:
-              - $ref: '#/components/schemas/AnyResourceIds'
-              - properties:
-                  any:
-                    maxItems: 100
-    Event:
-      type: object
-      required:
-      - hash
-      - date
-      - story-count-global
-      - document-count-entitlements
-      - document-count-global
-      - labels
-      - entities
-      - topics
-      - story-ids
-      properties:
-        labels:
-          type: array
-          items:
-            type: string
-          description: The most descriptive words or phrases that appear in the documents in the event.
-        date:
-          $ref: '#/components/schemas/Date'
-        document-count-entitlements:
-          type: integer
-          description: The number of documents that mentioned this event based on your user permissions.
-        hash:
-          $ref: '#/components/schemas/EventHash'
-        story-count-global:
-          type: integer
-          description: The number of stories that mentioned this event across Signal's global data set.
-        story-ids:
-          type: array
-          description: Ordered by centrality - how well the story represents the event in question. You can use these ids in the [Search API](#tag/Content-Search/operation/search-documents) to get headlines best describing the event.
-          items:
-            $ref: '#/components/schemas/ResourceId'
-        document-count-global:
-          type: integer
-          description: The number of documents that mentioned this event across Signal's global data set.
-        entities:
-          type: array
-          items:
-            $ref: '#/components/schemas/EventEntity'
-        topics:
-          type: array
-          items:
-            $ref: '#/components/schemas/EventTopic'
-        source-count-global:
-          oneOf:
-          - type: integer
-          - type: 'null'
-          description: The number of sources that mentioned this event across Signal's global data set.
-    EventTopicsMatch:
-      type: object
-      additionalProperties: false
-      required:
-      - id
-      properties:
-        id:
-          allOf:
-          - $ref: '#/components/schemas/AnyOrAllResourceIdsMatch'
-          - properties:
-              any:
-                maxItems: 100
-              all:
-                maxItems: 100
-    EventTopic:
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/PartialTopic'
-      - properties:
-          story-count:
-            type: integer
-          prominence-score:
-            type: number
-            description: The number of stories mentioning the concept divided by the story count for the event. For example, if half the stories in the event mention a topic then the prominence would be 0.5.
-    EventEntity:
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/Entity'
-      - properties:
-          story-count:
-            type: integer
-          prominence-score:
-            type: number
-            description: The number of stories mentioning the concept divided by the story count for the event. For example, if half the stories in the event mention an entity then the prominence would be 0.5.
-    ResourceId:
-      type: string
-      format: uuid
-      pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
-      example: bcd2d868-ed38-4382-b94a-622a30fc3215
-    EventMatch:
-      type: object
-      additionalProperties: false
-      properties:
-        date:
-          type: object
-          properties:
-            gt:
-              $ref: '#/components/schemas/Date'
-            gte:
-              $ref: '#/components/schemas/Date'
-            lt:
-              $ref: '#/components/schemas/Date'
-            lte:
-              $ref: '#/components/schemas/Date'
-          additionalProperties: false
-          minProperties: 1
-          dependentSchemas:
-            gt:
-              not:
-                required:
-                - gte
-            gte:
-              not:
-                required:
-                - gt
-            lt:
-              not:
-                required:
-                - lte
-            lte:
-              not:
-                required:
-                - lt
-        topics:
-          $ref: '#/components/schemas/EventTopicsMatch'
-        entities:
-          $ref: '#/components/schemas/EventEntitiesMatch'
-        labels:
-          type: object
-          description: Filter on specific words or phrases. A label can contain a maximum of 6 words.
-          oneOf:
-          - additionalProperties: false
-            properties:
-              any:
-                type: array
-                items:
-                  type: string
-                maxItems: 100
-          - additionalProperties: false
-            properties:
-              all:
-                type: array
-                items:
-                  type: string
-                maxItems: 100
-        sources:
-          type: object
-          additionalProperties: false
-          required:
-          - id
-          description: If the user does not have access to any of the sources specified, those ids will be excluded while fetching the events
-          properties:
-            id:
-              allOf:
-              - $ref: '#/components/schemas/AnyOrAllResourceIdsMatch'
-              - properties:
-                  any:
-                    maxItems: 100
-                  all:
-                    maxItems: 100
-    EventHashResponse:
-      type: object
-      required:
-      - event
-      additionalProperties: false
-      properties:
-        event:
-          type: object
-          unevaluatedProperties: false
-          allOf:
-          - $ref: '#/components/schemas/Event'
-          - required:
-            - source-ids
-            properties:
-              source-ids:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ResourceId'
-                description: The sources that mention this event.
-    EventEntitiesMatch:
-      type: object
-      additionalProperties: false
-      required:
-      - id
-      properties:
-        id:
-          allOf:
-          - $ref: '#/components/schemas/AnyOrAllResourceIdsMatch'
-          - properties:
-              any:
-                type: array
-                maxItems: 200
-              all:
-                type: array
-                maxItems: 200
-    AnyResourceIds:
-      type: object
-      additionalProperties: false
-      required:
-      - any
-      properties:
-        any:
-          $ref: '#/components/schemas/ResourceIds'
-    ResourceIds:
-      type: array
-      items:
-        $ref: '#/components/schemas/ResourceId'
   securitySchemes:
     OAuth2:
       type: oauth2

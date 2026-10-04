@@ -74,6 +74,18 @@ paths:
                 $ref: '#/components/schemas/EntityResponse'
 components:
   schemas:
+    ResourceId:
+      type: string
+      format: uuid
+      pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+      example: bcd2d868-ed38-4382-b94a-622a30fc3215
+    EntityResponse:
+      type: object
+      required:
+      - entity
+      properties:
+        entity:
+          $ref: '#/components/schemas/Entity'
     Entity:
       type: object
       required:
@@ -101,11 +113,6 @@ components:
       type: string
       pattern: ^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$
       example: RjQ2RTRBQUEtQTNGRi00MEI3LUE1NEYtNTA0NEQxMjc5NkU3
-    ResourceId:
-      type: string
-      format: uuid
-      pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
-      example: bcd2d868-ed38-4382-b94a-622a30fc3215
     EntitiesResponse:
       type: object
       required:
@@ -117,13 +124,6 @@ components:
             $ref: '#/components/schemas/Entity'
         next-cursor:
           $ref: '#/components/schemas/Base64String'
-    EntityResponse:
-      type: object
-      required:
-      - entity
-      properties:
-        entity:
-          $ref: '#/components/schemas/Entity'
   securitySchemes:
     OAuth2:
       type: oauth2

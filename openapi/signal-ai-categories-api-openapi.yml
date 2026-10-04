@@ -50,28 +50,6 @@ paths:
                 $ref: '#/components/schemas/CategoryResponse'
 components:
   schemas:
-    CategoryDetails:
-      type: object
-      required:
-      - description
-      - external-uri
-      properties:
-        description:
-          type: string
-        external-uri:
-          type: string
-        parent:
-          $ref: '#/components/schemas/ResourceId'
-        children:
-          type: array
-          items:
-            $ref: '#/components/schemas/ResourceId'
-        beta:
-          type: boolean
-          description: If provided and true, then the classification quality for this category is not guaranteed
-        unavailable:
-          type: boolean
-          description: If provided and true, the Signal platform does not currently recognise this category
     CategoriesResponse:
       type: object
       deprecated: true
@@ -99,6 +77,28 @@ components:
           $ref: '#/components/schemas/ResourceId'
         name:
           type: string
+    CategoryDetails:
+      type: object
+      required:
+      - description
+      - external-uri
+      properties:
+        description:
+          type: string
+        external-uri:
+          type: string
+        parent:
+          $ref: '#/components/schemas/ResourceId'
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceId'
+        beta:
+          type: boolean
+          description: If provided and true, then the classification quality for this category is not guaranteed
+        unavailable:
+          type: boolean
+          description: If provided and true, the Signal platform does not currently recognise this category
     CategoryResponse:
       type: object
       deprecated: true

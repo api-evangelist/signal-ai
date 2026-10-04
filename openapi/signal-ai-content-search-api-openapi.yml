@@ -169,27 +169,6 @@ paths:
                 $ref: '#/components/schemas/DocumentResponse'
 components:
   schemas:
-    KeywordsExclusion:
-      type: object
-      additionalProperties: false
-      required:
-      - value
-      properties:
-        value:
-          $ref: '#/components/schemas/AnyTerms'
-    Entity:
-      type: object
-      required:
-      - id
-      - name
-      - type
-      properties:
-        id:
-          $ref: '#/components/schemas/ResourceId'
-        type:
-          $ref: '#/components/schemas/EntityType'
-        name:
-          type: string
     DocumentKeywordsMatch:
       type: object
       required:
@@ -202,23 +181,69 @@ components:
         mentions:
           $ref: '#/components/schemas/MentionPositionMatch'
       description: Note that to use inclusion keywords, you will also need to include one of `entities`, `sources` or `topics` in your `where` clause.
-    AllResourceIds:
+    MediaType:
+      type: string
+      enum:
+      - online
+      - print
+    SortField:
+      type: string
+      enum:
+      - published-at
+      - score
+    SourceExclusion:
       type: object
       additionalProperties: false
       required:
-      - all
+      - id
       properties:
-        all:
-          $ref: '#/components/schemas/ResourceIds'
-    MentionPositionMatch:
+        id:
+          allOf:
+          - $ref: '#/components/schemas/AnyResourceIds'
+          - properties:
+              any:
+                maxItems: 500
+    CategoriesMatch:
       type: object
+      deprecated: true
       additionalProperties: false
       required:
-      - position
+      - id
       properties:
-        position:
-          $ref: '#/components/schemas/DocumentPosition'
-      description: Note that mentions found in `summary` or `quotation` are a subset of the mentions found in the `full content`.
+        id:
+          allOf:
+          - $ref: '#/components/schemas/ResourceIdsMatch'
+          - properties:
+              any:
+                maxItems: 100
+              all:
+                maxItems: 100
+    DocumentMatch:
+      type: object
+      additionalProperties: false
+      properties:
+        story-id:
+          allOf:
+          - $ref: '#/components/schemas/EqualsOrAnyResourceIdsMatch'
+          - properties:
+              any:
+                maxItems: 200
+        entities:
+          $ref: '#/components/schemas/DocumentEntitiesMatch'
+        published-at:
+          $ref: '#/components/schemas/DateTimeRangeMatch'
+        source:
+          $ref: '#/components/schemas/SourceMatch'
+        keywords:
+          $ref: '#/components/schemas/DocumentKeywordsMatch'
+        topics:
+          $ref: '#/components/schemas/DocumentTopicsMatch'
+        categories:
+          $ref: '#/components/schemas/CategoriesMatch'
+        language:
+          $ref: '#/components/schemas/LanguageMatch'
+        media-type:
+          $ref: '#/components/schemas/MediaTypeMatch'
     SourceMatch:
       type: object
       additionalProperties: false
@@ -235,117 +260,6 @@ components:
           $ref: '#/components/schemas/EqualsOrAnyTermsMatch'
         subregion:
           $ref: '#/components/schemas/EqualsOrAnyTermsMatch'
-    PartialTopic:
-      type: object
-      required:
-      - id
-      - name
-      properties:
-        id:
-          $ref: '#/components/schemas/ResourceId'
-        name:
-          type: string
-    AllTerms:
-      type: object
-      additionalProperties: false
-      required:
-      - all
-      properties:
-        all:
-          type: array
-          items:
-            type: string
-    Date:
-      type: string
-      format: date
-      description: "A date based on the IETF RFC 3339 format (e.g. `2023-01-01`).\n    Note that a day is the span of time between 00:00:00 and 23:59:59 based on\n    the UTC timezone. You may prefer using the `date-time` option to match days\n    in a different timezone."
-      example: '2023-01-01'
-    EqualsOrAnyOrAllTermsMatch:
-      oneOf:
-      - $ref: '#/components/schemas/EqualsTerm'
-      - $ref: '#/components/schemas/AnyTerms'
-      - $ref: '#/components/schemas/AllTerms'
-    EntitiesExclusion:
-      type: object
-      additionalProperties: false
-      required:
-      - id
-      properties:
-        id:
-          allOf:
-          - $ref: '#/components/schemas/AnyResourceIds'
-          - properties:
-              any:
-                maxItems: 100
-    Base64String:
-      type: string
-      pattern: ^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$
-      example: RjQ2RTRBQUEtQTNGRi00MEI3LUE1NEYtNTA0NEQxMjc5NkU3
-    CountryExclusion:
-      type: object
-      additionalProperties: false
-      required:
-      - country
-      properties:
-        country:
-          $ref: '#/components/schemas/AnyTerms'
-    DocumentEntitiesMatch:
-      type: object
-      additionalProperties: false
-      required:
-      - id
-      properties:
-        id:
-          allOf:
-          - $ref: '#/components/schemas/ResourceIdsMatch'
-          - properties:
-              any:
-                type: array
-                maxItems: 200
-              all:
-                type: array
-                maxItems: 200
-        salient-only:
-          type: boolean
-          description: Only return documents for which these entities are salient
-        mentions:
-          $ref: '#/components/schemas/MentionPositionMatch'
-    SentimentLabel:
-      type: string
-      enum:
-      - positive
-      - negative
-      - neutral
-    EntityType:
-      type: string
-      enum:
-      - person
-      - organisation
-      - location
-      - substance
-      - disease
-      - product
-      - regulation
-    DocumentPosition:
-      type: string
-      enum:
-      - title
-      - title or summary
-      - full content
-      - quotes only
-    SearchStats:
-      type: object
-      required:
-      - total
-      properties:
-        total:
-          type: integer
-          description: Approximate total number of documents matching this search
-    SortOrder:
-      type: string
-      enum:
-      - asc
-      - desc
     Document:
       type: object
       required:
@@ -396,73 +310,77 @@ components:
           description: Document title in its native language (for non english content)
         media-type:
           $ref: '#/components/schemas/MediaType'
-    SortClause:
-      type: array
-      prefixItems:
-      - $ref: '#/components/schemas/SortField'
-      - $ref: '#/components/schemas/SortOrder'
-      items: false
-    LanguageMatch:
-      oneOf:
-      - type: object
-        additionalProperties: false
-        required:
-        - eq
-        properties:
-          eq:
-            type: string
-            description: Language (e.g. `English`, `Chinese`, `Spanish`, `German`, `Japanese`...)
-      - type: object
-        name: AnyLanguage
-        additionalProperties: false
-        required:
-        - any
-        properties:
-          any:
-            type: array
-            items:
-              type: string
-            description: A list of languages (e.g. `English`, `Chinese`, `Spanish`, `German`, `Japanese`...)
-    DateTime:
-      type: string
-      format: date-time
-      description: "A date and time based on the IETF RFC 3339 format (e.g.\n     `2023-01-01T13:37:00` or `2023-01-01T13:37:00Z` for UTC,\n     `2023-01-01T09:37:00-05:00` for EST). Note that UTC is used by default."
-      example: '2023-01-01T13:37:00'
-    DocumentSearchResponse:
-      type: object
-      required:
-      - stats
-      - documents
-      properties:
-        stats:
-          $ref: '#/components/schemas/SearchStats'
-        documents:
-          type: array
-          items:
-            $ref: '#/components/schemas/Document'
-        next-cursor:
-          $ref: '#/components/schemas/Base64String'
-    EqualsOrAnyResourceIdsMatch:
-      oneOf:
-      - $ref: '#/components/schemas/EqualsResourceId'
-      - $ref: '#/components/schemas/AnyResourceIds'
-    DocumentResponse:
-      type: object
-      required:
-      - document
-      properties:
-        document:
-          $ref: '#/components/schemas/Document'
-    AnyTerms:
+    CountryExclusion:
       type: object
       additionalProperties: false
       required:
-      - any
+      - country
       properties:
-        any:
-          type: array
-          items:
-            type: string
+        country:
+          $ref: '#/components/schemas/AnyTerms'
+    SortOrder:
+      type: string
+      enum:
+      - asc
+      - desc
+    EntityType:
+      type: string
+      enum:
+      - person
+      - organisation
+      - location
+      - substance
+      - disease
+      - product
+      - regulation
+    Mention:
+      type: object
+      required:
+      - position
+      additionalProperties: false
+      properties:
+        position:
+          type: string
+          enum:
+          - content
+          - summary
+          - title
+          - quote
+        sentiment:
+          $ref: '#/components/schemas/SentimentLabel'
+    Base64String:
+      type: string
+      pattern: ^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$
+      example: RjQ2RTRBQUEtQTNGRi00MEI3LUE1NEYtNTA0NEQxMjc5NkU3
+    EqualsResourceId:
+      type: object
+      additionalProperties: false
+      required:
+      - eq
+      properties:
+        eq:
+          $ref: '#/components/schemas/ResourceId'
+    ResourceIds:
+      type: array
+      items:
+        $ref: '#/components/schemas/ResourceId'
+    DocumentPosition:
+      type: string
+      enum:
+      - title
+      - title or summary
+      - full content
+      - quotes only
+    PartialTopic:
+      type: object
+      required:
+      - id
+      - name
+      properties:
+        id:
+          $ref: '#/components/schemas/ResourceId'
+        name:
+          type: string
     ExcludeClause:
       type: object
       additionalProperties: false
@@ -491,57 +409,10 @@ components:
                 maxItems: 100
               all:
                 maxItems: 100
-    EqualsTerm:
-      type: object
-      additionalProperties: false
-      required:
-      - eq
-      properties:
-        eq:
-          type: string
-    TopicsExclusion:
-      type: object
-      additionalProperties: false
-      required:
-      - id
-      properties:
-        id:
-          allOf:
-          - $ref: '#/components/schemas/AnyResourceIds'
-          - properties:
-              any:
-                maxItems: 50
-    DocumentMatch:
-      type: object
-      additionalProperties: false
-      properties:
-        story-id:
-          allOf:
-          - $ref: '#/components/schemas/EqualsOrAnyResourceIdsMatch'
-          - properties:
-              any:
-                maxItems: 200
-        entities:
-          $ref: '#/components/schemas/DocumentEntitiesMatch'
-        published-at:
-          $ref: '#/components/schemas/DateTimeRangeMatch'
-        source:
-          $ref: '#/components/schemas/SourceMatch'
-        keywords:
-          $ref: '#/components/schemas/DocumentKeywordsMatch'
-        topics:
-          $ref: '#/components/schemas/DocumentTopicsMatch'
-        categories:
-          $ref: '#/components/schemas/CategoriesMatch'
-        language:
-          $ref: '#/components/schemas/LanguageMatch'
-        media-type:
-          $ref: '#/components/schemas/MediaTypeMatch'
-    ResourceId:
-      type: string
-      format: uuid
-      pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
-      example: bcd2d868-ed38-4382-b94a-622a30fc3215
+    EqualsOrAnyResourceIdsMatch:
+      oneOf:
+      - $ref: '#/components/schemas/EqualsResourceId'
+      - $ref: '#/components/schemas/AnyResourceIds'
     Category:
       type: object
       required:
@@ -552,36 +423,15 @@ components:
           $ref: '#/components/schemas/ResourceId'
         name:
           type: string
-    SortField:
-      type: string
-      enum:
-      - published-at
-      - score
-    SourceExclusion:
+    MentionPositionMatch:
       type: object
       additionalProperties: false
       required:
-      - id
+      - position
       properties:
-        id:
-          allOf:
-          - $ref: '#/components/schemas/AnyResourceIds'
-          - properties:
-              any:
-                maxItems: 500
-    ResourceIdsMatch:
-      oneOf:
-      - $ref: '#/components/schemas/EqualsResourceId'
-      - $ref: '#/components/schemas/AnyResourceIds'
-      - $ref: '#/components/schemas/AllResourceIds'
-    EqualsResourceId:
-      type: object
-      additionalProperties: false
-      required:
-      - eq
-      properties:
-        eq:
-          $ref: '#/components/schemas/ResourceId'
+        position:
+          $ref: '#/components/schemas/DocumentPosition'
+      description: Note that mentions found in `summary` or `quotation` are a subset of the mentions found in the `full content`.
     EqualsMediaType:
       type: object
       additionalProperties: false
@@ -590,57 +440,64 @@ components:
       properties:
         eq:
           $ref: '#/components/schemas/MediaType'
-    DocumentSearchQuery:
+    AnyMediaType:
       type: object
-      required:
-      - where
       additionalProperties: false
+      required:
+      - any
       properties:
-        where:
-          $ref: '#/components/schemas/DocumentMatch'
-        exclude:
-          $ref: '#/components/schemas/ExcludeClause'
-        size:
-          type: integer
-          default: 10
-          minimum: 0
-          maximum: 500
-        sort:
+        any:
           type: array
           items:
-            $ref: '#/components/schemas/SortClause'
-          minItems: 1
-          default:
-          - - published-at
-            - desc
-          description: 'format: `[[SORT_FIELD, SORT_ORDER], ...]` where `SORT_FIELD` can be one of `"published-at"` or `"score"`, and `SORT_ORDER` one of `"asc"` or `"desc"`'
-        from-cursor:
-          $ref: '#/components/schemas/Base64String'
-          description: Use the `next-cursor` field from a previous response to get the next page of results (see [Pagination](#section/Pagination))
-    Mention:
+            $ref: '#/components/schemas/MediaType'
+    EntityWithMentions:
       type: object
-      required:
-      - position
-      additionalProperties: false
-      properties:
-        position:
-          type: string
-          enum:
-          - content
-          - summary
-          - title
-          - quote
-        sentiment:
-          $ref: '#/components/schemas/SentimentLabel'
-    EqualsOrAnyTermsMatch:
-      oneOf:
-      - $ref: '#/components/schemas/EqualsTerm'
-      - $ref: '#/components/schemas/AnyTerms'
-    MediaType:
+      allOf:
+      - $ref: '#/components/schemas/Entity'
+      - required:
+        - sentiment
+        - mentions
+        properties:
+          sentiment:
+            $ref: '#/components/schemas/SentimentLabel'
+          salient:
+            type: boolean
+            description: Indicates if this entity is truly central to the content of the document
+          salience-rank:
+            type: integer
+            minimum: 1
+            description: Indicates how close this entity is to the topic of discussion in the article, in relation to other entities mentioned. A lower rank means a higher salience.
+          mentions:
+            type: array
+            items:
+              $ref: '#/components/schemas/Mention'
+            description: The positions of the entity in the document
+    Date:
       type: string
-      enum:
-      - online
-      - print
+      format: date
+      description: "A date based on the IETF RFC 3339 format (e.g. `2023-01-01`).\n    Note that a day is the span of time between 00:00:00 and 23:59:59 based on\n    the UTC timezone. You may prefer using the `date-time` option to match days\n    in a different timezone."
+      example: '2023-01-01'
+    LanguageMatch:
+      oneOf:
+      - type: object
+        additionalProperties: false
+        required:
+        - eq
+        properties:
+          eq:
+            type: string
+            description: Language (e.g. `English`, `Chinese`, `Spanish`, `German`, `Japanese`...)
+      - type: object
+        name: AnyLanguage
+        additionalProperties: false
+        required:
+        - any
+        properties:
+          any:
+            type: array
+            items:
+              type: string
+            description: A list of languages (e.g. `English`, `Chinese`, `Spanish`, `German`, `Japanese`...)
     Source:
       type: object
       required:
@@ -663,44 +520,26 @@ components:
         country: United Kingdom
         subregion: Northern Europe
         region: Europe
-    MediaTypeMatch:
-      oneOf:
-      - $ref: '#/components/schemas/EqualsMediaType'
-      - $ref: '#/components/schemas/AnyMediaType'
-    DateTimeRangeMatch:
+    TopicsExclusion:
       type: object
-      properties:
-        gt:
-          $ref: '#/components/schemas/DateOrDateTime'
-        gte:
-          $ref: '#/components/schemas/DateOrDateTime'
-        lt:
-          $ref: '#/components/schemas/DateOrDateTime'
-        lte:
-          $ref: '#/components/schemas/DateOrDateTime'
       additionalProperties: false
-      minProperties: 1
-      dependentSchemas:
-        gt:
-          not:
-            required:
-            - gte
-        gte:
-          not:
-            required:
-            - gt
-        lt:
-          not:
-            required:
-            - lte
-        lte:
-          not:
-            required:
-            - lt
-    DateOrDateTime:
-      oneOf:
-      - $ref: '#/components/schemas/Date'
-      - $ref: '#/components/schemas/DateTime'
+      required:
+      - id
+      properties:
+        id:
+          allOf:
+          - $ref: '#/components/schemas/AnyResourceIds'
+          - properties:
+              any:
+                maxItems: 50
+    KeywordsExclusion:
+      type: object
+      additionalProperties: false
+      required:
+      - value
+      properties:
+        value:
+          $ref: '#/components/schemas/AnyTerms'
     RegulatoryDocumentType:
       type: string
       enum:
@@ -733,9 +572,46 @@ components:
       - warning
       - other
       description: <span class="beta-tag"></span> Regulatory document categorisation
-    CategoriesMatch:
+    EqualsTerm:
       type: object
-      deprecated: true
+      additionalProperties: false
+      required:
+      - eq
+      properties:
+        eq:
+          type: string
+    DateTimeRangeMatch:
+      type: object
+      properties:
+        gt:
+          $ref: '#/components/schemas/DateOrDateTime'
+        gte:
+          $ref: '#/components/schemas/DateOrDateTime'
+        lt:
+          $ref: '#/components/schemas/DateOrDateTime'
+        lte:
+          $ref: '#/components/schemas/DateOrDateTime'
+      additionalProperties: false
+      minProperties: 1
+      dependentSchemas:
+        gt:
+          not:
+            required:
+            - gte
+        gte:
+          not:
+            required:
+            - gt
+        lt:
+          not:
+            required:
+            - lte
+        lte:
+          not:
+            required:
+            - lt
+    DocumentEntitiesMatch:
+      type: object
       additionalProperties: false
       required:
       - id
@@ -745,19 +621,44 @@ components:
           - $ref: '#/components/schemas/ResourceIdsMatch'
           - properties:
               any:
-                maxItems: 100
+                type: array
+                maxItems: 200
               all:
-                maxItems: 100
-    AnyMediaType:
+                type: array
+                maxItems: 200
+        salient-only:
+          type: boolean
+          description: Only return documents for which these entities are salient
+        mentions:
+          $ref: '#/components/schemas/MentionPositionMatch'
+    ResourceIdsMatch:
+      oneOf:
+      - $ref: '#/components/schemas/EqualsResourceId'
+      - $ref: '#/components/schemas/AnyResourceIds'
+      - $ref: '#/components/schemas/AllResourceIds'
+    AllTerms:
       type: object
       additionalProperties: false
       required:
-      - any
+      - all
       properties:
-        any:
+        all:
           type: array
           items:
-            $ref: '#/components/schemas/MediaType'
+            type: string
+    SearchStats:
+      type: object
+      required:
+      - total
+      properties:
+        total:
+          type: integer
+          description: Approximate total number of documents matching this search
+    ResourceId:
+      type: string
+      format: uuid
+      pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+      example: bcd2d868-ed38-4382-b94a-622a30fc3215
     AnyResourceIds:
       type: object
       additionalProperties: false
@@ -766,46 +667,132 @@ components:
       properties:
         any:
           $ref: '#/components/schemas/ResourceIds'
-    EntityWithMentions:
+    Entity:
       type: object
-      allOf:
-      - $ref: '#/components/schemas/Entity'
-      - required:
-        - sentiment
-        - mentions
-        properties:
-          sentiment:
-            $ref: '#/components/schemas/SentimentLabel'
-          salient:
-            type: boolean
-            description: Indicates if this entity is truly central to the content of the document
-          salience-rank:
-            type: integer
-            minimum: 1
-            description: Indicates how close this entity is to the topic of discussion in the article, in relation to other entities mentioned. A lower rank means a higher salience.
-          mentions:
-            type: array
-            items:
-              $ref: '#/components/schemas/Mention'
-            description: The positions of the entity in the document
-    ResourceIds:
-      type: array
-      items:
-        $ref: '#/components/schemas/ResourceId'
-  examples:
-    document-search-sort-by-relevance:
-      summary: Sort results by relevance score in descending order
-      value:
+      required:
+      - id
+      - name
+      - type
+      properties:
+        id:
+          $ref: '#/components/schemas/ResourceId'
+        type:
+          $ref: '#/components/schemas/EntityType'
+        name:
+          type: string
+    DateTime:
+      type: string
+      format: date-time
+      description: "A date and time based on the IETF RFC 3339 format (e.g.\n     `2023-01-01T13:37:00` or `2023-01-01T13:37:00Z` for UTC,\n     `2023-01-01T09:37:00-05:00` for EST). Note that UTC is used by default."
+      example: '2023-01-01T13:37:00'
+    AllResourceIds:
+      type: object
+      additionalProperties: false
+      required:
+      - all
+      properties:
+        all:
+          $ref: '#/components/schemas/ResourceIds'
+    SentimentLabel:
+      type: string
+      enum:
+      - positive
+      - negative
+      - neutral
+    DocumentSearchQuery:
+      type: object
+      required:
+      - where
+      additionalProperties: false
+      properties:
         where:
-          entities:
-            id:
-              eq: 73159b73-e3db-4895-8e29-89ee8da59765
-          topics:
-            id:
-              eq: 4762733c-baa7-4a91-958f-fdbbd96972cb
+          $ref: '#/components/schemas/DocumentMatch'
+        exclude:
+          $ref: '#/components/schemas/ExcludeClause'
+        size:
+          type: integer
+          default: 10
+          minimum: 0
+          maximum: 500
         sort:
-        - - score
-          - desc
+          type: array
+          items:
+            $ref: '#/components/schemas/SortClause'
+          minItems: 1
+          default:
+          - - published-at
+            - desc
+          description: 'format: `[[SORT_FIELD, SORT_ORDER], ...]` where `SORT_FIELD` can be one of `"published-at"` or `"score"`, and `SORT_ORDER` one of `"asc"` or `"desc"`'
+        from-cursor:
+          $ref: '#/components/schemas/Base64String'
+          description: Use the `next-cursor` field from a previous response to get the next page of results (see [Pagination](#section/Pagination))
+    SortClause:
+      type: array
+      prefixItems:
+      - $ref: '#/components/schemas/SortField'
+      - $ref: '#/components/schemas/SortOrder'
+      items: false
+    DocumentResponse:
+      type: object
+      required:
+      - document
+      properties:
+        document:
+          $ref: '#/components/schemas/Document'
+    EntitiesExclusion:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      properties:
+        id:
+          allOf:
+          - $ref: '#/components/schemas/AnyResourceIds'
+          - properties:
+              any:
+                maxItems: 100
+    EqualsOrAnyTermsMatch:
+      oneOf:
+      - $ref: '#/components/schemas/EqualsTerm'
+      - $ref: '#/components/schemas/AnyTerms'
+    DateOrDateTime:
+      oneOf:
+      - $ref: '#/components/schemas/Date'
+      - $ref: '#/components/schemas/DateTime'
+    AnyTerms:
+      type: object
+      additionalProperties: false
+      required:
+      - any
+      properties:
+        any:
+          type: array
+          items:
+            type: string
+    DocumentSearchResponse:
+      type: object
+      required:
+      - stats
+      - documents
+      properties:
+        stats:
+          $ref: '#/components/schemas/SearchStats'
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/Document'
+        next-cursor:
+          $ref: '#/components/schemas/Base64String'
+    EqualsOrAnyOrAllTermsMatch:
+      oneOf:
+      - $ref: '#/components/schemas/EqualsTerm'
+      - $ref: '#/components/schemas/AnyTerms'
+      - $ref: '#/components/schemas/AllTerms'
+    MediaTypeMatch:
+      oneOf:
+      - $ref: '#/components/schemas/EqualsMediaType'
+      - $ref: '#/components/schemas/AnyMediaType'
+  examples:
     document-search-by-source-and-entities:
       summary: Search for multiple entities mentionned together in a given publication
       value:
@@ -820,6 +807,29 @@ components:
               all:
               - 11cab8df-4be1-470f-8f49-8f7f0863ec95
               - 73159b73-e3db-4895-8e29-89ee8da59765
+    document-search-sort-by-relevance:
+      summary: Sort results by relevance score in descending order
+      value:
+        where:
+          entities:
+            id:
+              eq: 73159b73-e3db-4895-8e29-89ee8da59765
+          topics:
+            id:
+              eq: 4762733c-baa7-4a91-958f-fdbbd96972cb
+        sort:
+        - - score
+          - desc
+    document-search-by-entity:
+      summary: Search for documents mentioning an entity, published in a specific time range
+      value:
+        where:
+          published-at:
+            gte: '2021-03-01'
+            lt: '2021-04-01'
+          entities:
+            id:
+              eq: 1c7f436c-7d0b-4fdf-affb-aaebbac81ce5
     document-search-by-country-and-entity:
       summary: Search for documents mentioning an entity, published in a specific country
       value:
@@ -848,16 +858,6 @@ components:
               - 78a219a9-6997-4b9e-afa2-d8b94378ddea
               - 7a162a73-0062-4772-9dc0-252dd862dad0
         size: 100
-    document-search-by-entity:
-      summary: Search for documents mentioning an entity, published in a specific time range
-      value:
-        where:
-          published-at:
-            gte: '2021-03-01'
-            lt: '2021-04-01'
-          entities:
-            id:
-              eq: 1c7f436c-7d0b-4fdf-affb-aaebbac81ce5
   securitySchemes:
     OAuth2:
       type: oauth2
