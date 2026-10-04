@@ -1,0 +1,26 @@
+slug: signal-ai
+provider: Signal AI
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Software & Technology
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 1
+edges:
+- tag: Risk Events
+  spec_file: signal-ai-risk-events-api-openapi.yml
+  capability_id: BC-120.20
+  capability_id_l1: BC-120
+  capability_name: Risk Identification & Assessment
+  confidence: 0.7
+  evidence: POST /risk-events-scores  risk-events-scores  Risk Events Scores; schemas RiskEventDefinition,
+    RiskPillar, RiskScoreMatch, Entity
+  reason: Operations search risk events against entities, return risk definitions and risk scores by risk
+    pillar — risk discovery, assessment and scoring. Some ambiguity between risk identification/assessment
+    and ongoing risk monitoring.
