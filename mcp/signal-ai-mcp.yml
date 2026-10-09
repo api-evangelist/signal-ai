@@ -104,3 +104,19 @@ deployment:
   probe_prior: wall
   probe_why: RFC 9728 challenge (host-wide OAuth-protected resource)
 crosswalk: mcp/signal-ai-tool-crosswalk.yml
+rfc9728:
+  endpoint: https://mcp.signal-ai.com
+  metadata_url: https://mcp.signal-ai.com/.well-known/oauth-protected-resource
+  discovered_via: WWW-Authenticate resource_metadata on an anonymous POST initialize
+  fetched: '2026-09-25'
+  http_status: 200
+  content_type: application/json
+  document:
+    resource: https://mcp.signal-ai.com
+    authorization_servers:
+    - https://login.signal-ai.com/auth/realms/signal
+    scopes_supported:
+    - openid
+    - mcp:tools
+    bearer_methods_supported:
+    - header
